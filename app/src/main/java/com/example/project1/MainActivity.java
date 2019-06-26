@@ -20,15 +20,106 @@ import android.database.Cursor;
 import java.util.ArrayList;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import android.widget.Button;
+import android.app.Activity;
+import java.io.Serializable;
+
 
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private TableLayout tablayout;
-    private AppBarLayout appBarLayout;
-    ArrayList<User> userList = new ArrayList<>();
-    private ListView listView;
+//    private TableLayout tablayout;
+//    private AppBarLayout appBarLayout;
+
+    public class ContactItem implements Serializable{
+        private String user_number, user_name;
+        private long photo_id=0, person_id=0;
+        private int id;
+        public ContactItem(){}
+        public long getPhoto_id(){
+            return photo_id;
+        }
+        public long getPerson_id(){
+            return person_id;
+        }
+        public void setPhoto_id(long id){
+            this.photo_id=id;
+        }
+        public void setPerson_id(long id){
+            this.person_id=id;
+        }
+        public String getUser_number(){
+            return user_number;
+        }
+        public String getUser_name(){
+            return user_name;
+        }
+        public void setId(int id){
+            this.id=id;
+        }
+        public int getId(){
+            return id;
+        }
+        public void setUser_number(String string){
+            this.user_number=string;
+        }
+        public void setUser_name(String string){
+            this.user_name=string;
+        }
+        @Override
+        public String toString(){
+            return this.user_number;
+        }
+        @Override
+        public int hashCode(){
+            return getNumberChanged().hashCode();
+        }
+        public String getNumberChanged(){
+            return user_number.replace("-","");
+        }
+        @Override
+        public boolean equals(Object o){
+            if (o instanceof ContactItem)
+                return getNumberChanged().equals(((ContactItem)o).getNumberChanged());
+            return false;
+        }
+    }
+
+    public ArrayList<ContactItem> getContactList(){
+        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+        String[] projection = new String[]{
+                ContactsContract.CommonDataKinds.Phone.NUMBER,
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                ContactsContract.Contacts.PHOTO_ID,
+                ContactsContract.Contacts._ID
+        };
+        String[] selectionArgs = null;
+        String sortOrder = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + "COLLATE LOCALIZED ASC";
+        Cursor cursor = getContentResolver().query(uri, projection, null, selectionArgs, sortOrder);
+        LinkedHashSet<ContactItem> hashlist = new LinkedHashSet<>();
+        if (cursor.moveToFirst()){
+            do {
+                long photo_id = cursor.getLong(2);
+                long person_id = cursor.getLong(3);
+                ContactItem contactItem = new ContactItem();
+                contactItem.setUser_number(cursor.getString(0));
+                contactItem.setUser_name(cursor.getString(1));
+                contactItem.setPhoto_id(photo_id);
+                contactItem.setPerson_id(person_id);
+                hashlist.add(contactItem);
+            }while (cursor.moveToNext());
+        }
+        ArrayList<ContactItem> contactItems = new ArrayList<>(hashlist);
+        for (int i=0 ; i< contactItems.size(); i++){
+            contactItems.get(i).setId(i);
+        }
+        return contactItems;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +128,6 @@ public class MainActivity extends AppCompatActivity {
         TabHost tabHost1 = (TabHost) findViewById(R.id.tabHost1);
         tabHost1.setup();
 
-        listView =(ListView) findViewById(R.id.Listview);
 
         // 첫 번째 Tab. (탭 표시 텍스트:"TAB 1"), (페이지 뷰:"content1")
         TabHost.TabSpec ts1 = tabHost1.newTabSpec("Tab Spec 1");
@@ -58,62 +148,11 @@ public class MainActivity extends AppCompatActivity {
         tabHost1.addTab(ts3);
 
         tabHost1.setCurrentTab(0);
-    }
-    class User {
-        String name;
-        String number;
-    }
 
 
 
-
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == RESULT_OK)
-        {
-            Cursor cursor = getContentResolver().query(data.getData(),
-                    new String[]{ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-                            ContactsContract.CommonDataKinds.Phone.NUMBER}, null, null, null);
-            cursor.moveToFirst();
-            String name = cursor.getString(0);        //0은 이름을 얻어옵니다.
-            String number = cursor.getString(1);   //1은 번호를 받아옵니다.
-            User user1 = new User();
-            user1.name = name;
-            user1.number = number;
-            userList.add(user1);
-            try {
-                //JSONArray jArray = new JSONArray();//배열이 필요할때
-                for (int i = 0; i < userList.size(); i++) {
-                    JSONObject sObject = new JSONObject();//배열 내에 들어갈 json
-                    sObject.put("name", userList.get(i).name);
-                    sObject.put("number", userList.get(i).number);
-                    //jArray.put(sObject);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            //simpleAdapter 생성
-            SimpleAdapter simpleAdapter = new SimpleAdapter(this,userList,android.R.layout.simple_list_item_2,new String[]{"name","number"},new int[]{android.R.id.text1,android.R.id.text2});
-            listView.setAdapter(simpleAdapter);
-
-            cursor.close();
-        }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void onClick01(View v) {
-//        Intent intent = new Intent(Intent.ACTION_PICK);
-//        intent.setData(ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
-//        startActivityForResult(intent, 0);
-        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-        startActivityForResult(intent, 0);
-        setResult(1);
-        onActivityResult(0, 1, intent);
 
-    }
-    public void onClick02(View v) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:010-1234-5678"));
-        startActivity(intent);
-    }
 
 }
