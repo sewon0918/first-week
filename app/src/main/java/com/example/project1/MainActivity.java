@@ -32,8 +32,8 @@ import java.io.Serializable;
 
 public class MainActivity extends AppCompatActivity {
 
-//    private TableLayout tablayout;
-//    private AppBarLayout appBarLayout;
+    private TableLayout tablayout;
+    private AppBarLayout appBarLayout;
 
     public class ContactItem implements Serializable{
         private String user_number, user_name;
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
         TabHost tabHost1 = (TabHost) findViewById(R.id.tabHost1);
         tabHost1.setup();
-
+        ArrayList<ContactItem> contactItems = getContactList();
 
         // 첫 번째 Tab. (탭 표시 텍스트:"TAB 1"), (페이지 뷰:"content1")
         TabHost.TabSpec ts1 = tabHost1.newTabSpec("Tab Spec 1");
@@ -154,5 +154,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+//    public void onClick02(View v) {
+//        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:010-1234-5678"));
+//        startActivity(intent);
+//    }
 
 }

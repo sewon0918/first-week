@@ -43,22 +43,14 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <!--<android.support.v7.widget.RecyclerView-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="match_parent"-->
-                        <!--android:id="@+id/recycler_view">-->
-
-                    <!--</android.support.v7.widget.RecyclerView>-->
 
 
-                    <TextView
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:layout_height="match_parent"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="#8BC34A"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:text="CONTACT" />
-
+                        android:id="@+id/recycler_view">
+                    </androidx.recyclerview.widget.RecyclerView>
 
 
                 </LinearLayout>
