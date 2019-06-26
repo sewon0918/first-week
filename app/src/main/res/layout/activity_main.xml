@@ -67,6 +67,13 @@
                         android:text="연락처 선택"
                         android:layout_centerHorizontal="true"
                         android:layout_below="@+id/text"/>
+                    <ListView
+                        android:id="@+id/Listview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                    </ListView>
+
+
 
                     <Button android:onClick="onClick02"
                         android:layout_height="wrap_content"
