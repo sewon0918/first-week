@@ -43,21 +43,11 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <android.support.v7.widget.RecyclerView
-                        android:layout_width="match_parent"
+                    <androidx.recyclerview.widget.RecyclerView
                         android:layout_height="match_parent"
+                        android:layout_width="match_parent"
                         android:id="@+id/recycler_view">
-
-                    </android.support.v7.widget.RecyclerView>
-
-
-                    <!--<TextView-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:background="#8BC34A"-->
-                        <!--android:gravity="center"-->
-                        <!--android:padding="8dp"-->
-                        <!--android:text="TAB CONTENT 1" />-->
+                    </androidx.recyclerview.widget.RecyclerView>
 
                     <!--
                     <Button android:onClick="onClick01"
@@ -73,8 +63,6 @@
                         android:layout_height="match_parent">
                     </ListView>
 
-
-
                     <Button android:onClick="onClick02"
                         android:layout_height="wrap_content"
                         android:layout_width="wrap_content"
@@ -83,7 +71,6 @@
                         android:layout_centerHorizontal="true"
                         android:layout_below="@+id/text"/>
                     -->
-
                 </LinearLayout>
 
                 <!-- 두 번째 페이지. content2 -->
