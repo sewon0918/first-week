@@ -95,7 +95,7 @@
 
                     <TextView
                         android:layout_width="match_parent"
-                        android:laoyout_height="wrap_cntent"
+                        android:layout_height="wrap_content"
                         android:background="#2196F3"
                         android:gravity="center"
                         android:padding="8dp"

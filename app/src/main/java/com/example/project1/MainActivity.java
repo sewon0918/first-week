@@ -3,16 +3,16 @@ package com.example.project1;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TabHost;
-<<<<<<< HEAD
+
 import android.view.View;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.ContactsContract;
-=======
+
 import android.widget.TableLayout;
 
 import com.google.android.material.appbar.AppBarLayout;
->>>>>>> 9b001594c8e6e9c087ef880c18bd52ca75696a79
+
 
 public class MainActivity extends AppCompatActivity {
 
