@@ -40,6 +40,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return holder;
     }
 
+    // this is where the images and their corresponding names are loaded from layout_listitem.xml
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder: called.");  // this is simply for helping with debugging if needed
@@ -52,6 +53,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                                               // our view holder, then we reference our image
                                               // widget which is the widget shown in layout_listitem
         holder.imageName.setText(mImageNames.get(position));
+
+        // trying to open new page if you click a contact
+        //holder.parentLayout.setOnClickListener(new View.OnClickListener() {
+        //    @Override
+        //    public void onClick(View view) {
+        //        Log.d(TAG, "onClick: clicked on: " +  mImageNames.get(position));
+
+        //    }
+        //});
     }
 
     @Override
