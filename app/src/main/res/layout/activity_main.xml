@@ -44,13 +44,29 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="match_parent"
+                    <!--<TextView-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:background="#8BC34A"-->
+                        <!--android:gravity="center"-->
+                        <!--android:padding="8dp"-->
+                        <!--android:text="TAB CONTENT 1" />-->
+                    <Button android:onClick="onClick01"
                         android:layout_height="wrap_content"
-                        android:background="#8BC34A"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:text="TAB CONTENT 1" />
+                        android:layout_width="wrap_content"
+                        android:id="@+id/button1"
+                        android:text="연락처 선택"
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@+id/text"/>
+
+                    <Button android:onClick="onClick02"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:id="@+id/button1"
+                        android:text="전화걸기"
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@+id/text"/>
+
 
                 </LinearLayout>
 
@@ -80,7 +96,7 @@
 
                     <TextView
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:laoyout_height="wrap_cntent"
                         android:background="#2196F3"
                         android:gravity="center"
                         android:padding="8dp"

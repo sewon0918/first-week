@@ -3,6 +3,10 @@ package com.example.project1;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TabHost;
+import android.view.View;
+import android.content.Intent;
+import android.net.Uri;
+import android.provider.ContactsContract;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,4 +38,18 @@ public class MainActivity extends AppCompatActivity {
 
         tabHost1.setCurrentTab(0);
     }
+
+    public void onClick01(View v) {
+//        Intent intent = new Intent(Intent.ACTION_PICK);
+//        intent.setData(ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
+//        startActivityForResult(intent, 0);
+        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        startActivityForResult(intent, 0);
+
+    }
+    public void onClick02(View v) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:010-1234-5678"));
+        startActivity(intent);
+    }
+
 }
