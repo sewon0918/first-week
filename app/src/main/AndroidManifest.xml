@@ -19,6 +19,7 @@
     </application>
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <!-- to request images from the internet to use for circular thing .. glide
     not too important right now-->
