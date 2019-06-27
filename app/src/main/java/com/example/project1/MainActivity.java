@@ -158,8 +158,8 @@ public class MainActivity extends AppCompatActivity {
         String[] projection = new String[]{
                 ContactsContract.CommonDataKinds.Phone.NUMBER,
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-//                ContactsContract.Contacts.PHOTO_ID,
-//                ContactsContract.Contacts._ID
+                ContactsContract.Contacts.PHOTO_ID,
+                ContactsContract.Contacts._ID
         };
 
         String[] selectionArgs = null;
@@ -174,7 +174,8 @@ public class MainActivity extends AppCompatActivity {
                     JSONObject sObject = new JSONObject();
                     sObject.put("number", cursor.getString(0));
                     sObject.put("name", cursor.getString(1));
-                    // sObject.put("photo", cursor.getLong(2));
+                    sObject.put("photo_id", cursor.getLong(2));
+                    sObject.put("person_id", cursor.getLong(3));
                     jArray.put(sObject);
                 }
                 catch (JSONException e) {
@@ -233,6 +234,46 @@ public class MainActivity extends AppCompatActivity {
         return rBitmap;
     }
 
+    // adding images/photos and the names of corresponding contacts to each of their own lists
+
+//    private void initImageBitmaps(ArrayList<ContactItem> contactItems) {
+//        Log.d(TAG, "initImageBitmaps: preparing bitmaps");
+//        ContentResolver cr = getContentResolver();
+//        for (int j = 0; j < contactItems.size(); j++) {
+//            Names.add(contactItems.get(j).getUser_name());
+//            Numbers.add(contactItems.get(j).getUser_number());
+//            Photos.add(loadContactPhoto(cr, contactItems.get(j).getPerson_id(), contactItems.get(j).getPhoto_id()));
+//        }
+//        initRecyclerView(Names, Numbers, Photos);
+//    }
+
+    private void initContactInfo(JSONArray jArray) {
+        Log.d(TAG, "initContactInfo: preparing contact info");
+
+        ContentResolver cr = getContentResolver();
+
+        for (int j=0 ; j< jArray.length(); j++){
+            try {
+                Names.add(jArray.getJSONObject(j).getString("name"));
+                Numbers.add(jArray.getJSONObject(j).getString("number"));
+                Photos.add(loadContactPhoto(cr,
+                        jArray.getJSONObject(j).getLong("person_id"),
+                        jArray.getJSONObject(j).getLong("photo_id")));
+            }
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        initRecyclerView(Names, Numbers, Photos);
+    }
+
+    private void initRecyclerView(ArrayList<String> Names, ArrayList<String> Numbers, ArrayList<Bitmap> Photos) {
+        Log.d(TAG, "initRecyclerView: init recyclerView.");
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(Names, Numbers, Photos,this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -267,42 +308,6 @@ public class MainActivity extends AppCompatActivity {
 
         tabHost1.setCurrentTab(0);
 
-    }
-
-    // adding images/photos and the names of corresponding contacts to each of their own lists
-
-//    private void initImageBitmaps(ArrayList<ContactItem> contactItems) {
-//        Log.d(TAG, "initImageBitmaps: preparing bitmaps");
-//        ContentResolver cr = getContentResolver();
-//        for (int j = 0; j < contactItems.size(); j++) {
-//            Names.add(contactItems.get(j).getUser_name());
-//            Numbers.add(contactItems.get(j).getUser_number());
-//            Photos.add(loadContactPhoto(cr, contactItems.get(j).getPerson_id(), contactItems.get(j).getPhoto_id()));
-//        }
-//        initRecyclerView(Names, Numbers, Photos);
-//    }
-
-    private void initContactInfo(JSONArray jArray) {
-        Log.d(TAG, "initContactInfo: preparing contact info");
-
-        for (int j=0 ; j< jArray.length(); j++){
-            try {
-                Names.add(jArray.getJSONObject(j).getString("name"));
-                Numbers.add(jArray.getJSONObject(j).getString("number"));
-            }
-            catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        initRecyclerView(Names, Numbers);
-    }
-
-    private void initRecyclerView(ArrayList<String> Names, ArrayList<String> Numbers, ArrayList<Bitmap> Photos) {
-        Log.d(TAG, "initRecyclerView: init recyclerView.");
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(Names, Numbers, Photos,this);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
 }
