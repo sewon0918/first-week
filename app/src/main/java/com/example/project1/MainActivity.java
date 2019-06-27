@@ -1,42 +1,28 @@
 package com.example.project1;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.util.Log;
+import android.widget.TabHost;
+import android.widget.TableLayout;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.ContentUris;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.TabHost;
-
-import android.view.View;
-import android.content.Intent;
-import android.net.Uri;
-import android.provider.ContactsContract;
-
-import android.widget.TableLayout;
 
 import com.google.android.material.appbar.AppBarLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import android.database.Cursor;
 
-import java.io.InputStream;
 import java.util.ArrayList;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import android.widget.Button;
-import android.app.Activity;
-import java.io.Serializable;
-import android.content.ContentResolver;
-import android.util.Log;
 
 
 public class MainActivity extends AppCompatActivity {
