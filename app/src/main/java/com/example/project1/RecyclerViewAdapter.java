@@ -11,8 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -50,7 +48,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 //                .load(Numbers.get(position))                // this is the image URL
 //                .into(holder.image);
 
-        holder.number.setText(Names.get(position));
+        holder.name.setText(Names.get(position));
+        holder.number.setText(Numbers.get(position));
 
         // trying to open new page if you click a contact
         //holder.parentLayout.setOnClickListener(new View.OnClickListener() {
@@ -67,6 +66,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return Names.size();
     }
 
+    @Override
+    public int getItemViewType(int position){
+        int viewType = 1;
+        return viewType;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView name;
@@ -75,9 +80,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            name = itemView.findViewById(R.id.name);
-            number = itemView.findViewById(R.id.number);
+            name = itemView.findViewById(R.id.name1);
+            number = itemView.findViewById(R.id.number1);
             parentLayout = itemView.findViewById(R.id.parent_layout);
         }
     }
 }
+//////////

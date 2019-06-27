@@ -6,7 +6,7 @@
     android:id="@+id/parent_layout">
 
     <TextView
-        android:id="@+id/name"
+        android:id="@+id/name1"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginStart="10dp"
@@ -17,7 +17,7 @@
         android:src="@mipmap/ic_launcher"/>
 
     <TextView
-        android:id="@+id/number"
+        android:id="@+id/number1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="100dp"

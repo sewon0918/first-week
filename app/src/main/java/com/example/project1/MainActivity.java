@@ -39,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     //variables for RecyclerView ?
-    private ArrayList<String> mNames = new ArrayList<>();
-    private ArrayList<String> mImageUrls = new ArrayList<>();
+//    private ArrayList<String> mNames = new ArrayList<>();
+//    private ArrayList<String> mImageUrls = new ArrayList<>();
     private ArrayList<String> Names = new ArrayList<>();
     private ArrayList<String> Numbers = new ArrayList<>();
     private TableLayout tablayout;
@@ -49,21 +49,21 @@ public class MainActivity extends AppCompatActivity {
 
     public class ContactItem implements Serializable{
         private String user_number, user_name;
-        private long photo_id=0, person_id=0;
+//        private long photo_id=0, person_id=0;
         private int id;
         public ContactItem(){}
-        public long getPhoto_id(){
-            return photo_id;
-        }
-        public long getPerson_id(){
-            return person_id;
-        }
-        public void setPhoto_id(long id){
-            this.photo_id=id;
-        }
-        public void setPerson_id(long id){
-            this.person_id=id;
-        }
+//        public long getPhoto_id(){
+//            return photo_id;
+//        }
+//        public long getPerson_id(){
+//            return person_id;
+//        }
+//        public void setPhoto_id(long id){
+//            this.photo_id=id;
+//        }
+//        public void setPerson_id(long id){
+//            this.person_id=id;
+//        }
         public String getUser_number(){
             return user_number;
         }
@@ -106,22 +106,22 @@ public class MainActivity extends AppCompatActivity {
         String[] projection = new String[]{
                 ContactsContract.CommonDataKinds.Phone.NUMBER,
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-                ContactsContract.Contacts.PHOTO_ID,
-                ContactsContract.Contacts._ID
+//                ContactsContract.Contacts.PHOTO_ID,
+//                ContactsContract.Contacts._ID
         };
         String[] selectionArgs = null;
-        String sortOrder = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + "COLLATE LOCALIZED ASC";
-        Cursor cursor = getContentResolver().query(uri, projection, null, selectionArgs, sortOrder);
+        //String sortOrder = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + "COLLATE LOCALIZED ASC";
+        Cursor cursor = getContentResolver().query(uri, projection, null, selectionArgs, null);
         LinkedHashSet<ContactItem> hashlist = new LinkedHashSet<>();
         if (cursor.moveToFirst()){
             do {
-                long photo_id = cursor.getLong(2);
-                long person_id = cursor.getLong(3);
+//                long photo_id = cursor.getLong(2);
+//                long person_id = cursor.getLong(3);
                 ContactItem contactItem = new ContactItem();
                 contactItem.setUser_number(cursor.getString(0));
                 contactItem.setUser_name(cursor.getString(1));
-                contactItem.setPhoto_id(photo_id);
-                contactItem.setPerson_id(person_id);
+//                contactItem.setPhoto_id(photo_id);
+//                contactItem.setPerson_id(person_id);
                 hashlist.add(contactItem);
             }while (cursor.moveToNext());
         }
@@ -171,34 +171,16 @@ public class MainActivity extends AppCompatActivity {
     private void initImageBitmaps(ArrayList<ContactItem> contactItems){
         Log.d(TAG, "initImageBitmaps: preparing bitmaps");
 
-//        mImageUrls.add("https://www.thelabradorsite.com/wp-content/uploads/2018/04/9-weeks.jpg");
-//        mNames.add("Labrador Puppy");
-//
-//        mImageUrls.add("https://rlv.zcache.com/pembroke_welsh_corgi_puppy_postcard-rd3641220834848e6936aa22aca40087f_vgbaq_8byvr_540.jpg");
-//        mNames.add("Corgi Puppy");
-//
-//        mImageUrls.add("https://www.warrenphotographic.co.uk/photography/bigs/40748-Cute-red-Toy-Poodle-puppy-white-background.jpg");
-//        mNames.add("Poodle Puppy");
-//
-//        mImageUrls.add("https://i.ytimg.com/vi/wRx3Uvcktm8/maxresdefault.jpg");
-//        mNames.add("Pug Puppy");
-//
-//        mImageUrls.add("https://i.pinimg.com/originals/3c/d2/a8/3cd2a844037b921028481f9f3f82d21f.jpg");
-//        mNames.add("Husky Puppy");
-//
-//        mImageUrls.add("http://www.icewindshibas.com/wp-content/uploads/2017/07/red-resized-01.jpg");
-//        mNames.add("Shiba Inu Puppy");
         for (int j=0 ; j< contactItems.size(); j++){
             Names.add(contactItems.get(j).getUser_name());
             Numbers.add(contactItems.get(j).getUser_number());
         }
-        initRecyclerView();
+        initRecyclerView( Names, Numbers);
     }
 
-    private void initRecyclerView(){
+    private void initRecyclerView(ArrayList<String> Names, ArrayList<String> Numbers){
         Log.d(TAG, "initRecyclerView: init recyclerView.");
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        //RecyclerViewAdapter adapter = new RecyclerViewAdapter(mNames, mImageUrls, this);
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(Names, Numbers, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
