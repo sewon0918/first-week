@@ -51,72 +51,73 @@ public class MainActivity extends AppCompatActivity {
     private AppBarLayout appBarLayout;
 
 
-    public class ContactItem implements Serializable {
-        private String user_number, user_name;
-        private long photo_id=0, person_id=0;
-        private int id;
+//    public class ContactItem implements Serializable {
+//        private String user_number, user_name;
+//        private long photo_id=0, person_id=0;
+//        private int id;
+//
+//        public ContactItem() {
+//        }
+//        public long getPhoto_id(){
+//            return photo_id;
+//        }
+//        public long getPerson_id(){
+//            return person_id;
+//        }
+//        public void setPhoto_id(long id){
+//            this.photo_id=id;
+//        }
+//        public void setPerson_id(long id){
+//            this.person_id=id;
+//        }
+//        public String getUser_number() {
+//            return user_number;
+//        }
+//
+//        public String getUser_name() {
+//            return user_name;
+//        }
+//
+//        public void setId(int id) {
+//            this.id = id;
+//        }
+//
+//        public int getId() {
+//            return id;
+//        }
+//
+//        public void setUser_number(String string) {
+//            this.user_number = string;
+//        }
+//
+//        public void setUser_name(String string) {
+//            this.user_name = string;
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return this.user_number;
+//        }
+//
+//        @Override
+//        public int hashCode() {
+//            return getNumberChanged().hashCode();
+//        }
+//
+//        public String getNumberChanged() {
+//            return user_number.replace("-", "");
+//        }
+//
+//        @Override
+//        public boolean equals(Object o) {
+//            if (o instanceof ContactItem)
+//                return getNumberChanged().equals(((ContactItem) o).getNumberChanged());
+//            return false;
+//        }
+//    }
 
-        public ContactItem() {
-        }
-        public long getPhoto_id(){
-            return photo_id;
-        }
-        public long getPerson_id(){
-            return person_id;
-        }
-        public void setPhoto_id(long id){
-            this.photo_id=id;
-        }
-        public void setPerson_id(long id){
-            this.person_id=id;
-        }
-        public String getUser_number() {
-            return user_number;
-        }
 
-        public String getUser_name() {
-            return user_name;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public void setUser_number(String string) {
-            this.user_number = string;
-        }
-
-        public void setUser_name(String string) {
-            this.user_name = string;
-        }
-
-        @Override
-        public String toString() {
-            return this.user_number;
-        }
-
-        @Override
-        public int hashCode() {
-            return getNumberChanged().hashCode();
-        }
-
-        public String getNumberChanged() {
-            return user_number.replace("-", "");
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o instanceof ContactItem)
-                return getNumberChanged().equals(((ContactItem) o).getNumberChanged());
-            return false;
-        }
-    }
-
-    public ArrayList<ContactItem> getContactList() {
+    /*public ArrayList<ContactItem> getContactList(){
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
         String[] projection = new String[]{
                 ContactsContract.CommonDataKinds.Phone.NUMBER,
@@ -124,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 ContactsContract.Contacts.PHOTO_ID,
                 ContactsContract.Contacts._ID
         };
+
         String[] selectionArgs = null;
         String sortOrder = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC";
         Cursor cursor = getContentResolver().query(uri, projection, null, selectionArgs, sortOrder);
@@ -140,11 +142,47 @@ public class MainActivity extends AppCompatActivity {
                 hashlist.add(contactItem);
             } while (cursor.moveToNext());
         }
+
         ArrayList<ContactItem> contactItems = new ArrayList<>(hashlist);
-//        for (int i = 0; i < contactItems.size(); i++) {
-//            contactItems.get(i).setId(i);
-//        }
+
+
+        // this is just for setting id for each contact..
+        for (int i=0 ; i< contactItems.size(); i++){
+            contactItems.get(i).setId(i);
+        }
         return contactItems;
+    }*/
+
+    public JSONArray getContactList(){
+        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+        String[] projection = new String[]{
+                ContactsContract.CommonDataKinds.Phone.NUMBER,
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+//                ContactsContract.Contacts.PHOTO_ID,
+//                ContactsContract.Contacts._ID
+        };
+
+        String[] selectionArgs = null;
+        //String sortOrder = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + "COLLATE LOCALIZED ASC";
+        Cursor cursor = getContentResolver().query(uri, projection, null, selectionArgs, null);
+
+        JSONArray jArray = new JSONArray();
+
+        if (cursor.moveToFirst()){
+            do {
+                try {
+                    JSONObject sObject = new JSONObject();
+                    sObject.put("number", cursor.getString(0));
+                    sObject.put("name", cursor.getString(1));
+                    // sObject.put("photo", cursor.getLong(2));
+                    jArray.put(sObject);
+                }
+                catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }while (cursor.moveToNext());
+        }
+        return jArray;
     }
 
     public Bitmap loadContactPhoto(ContentResolver cr, long id, long photo_id){
@@ -205,8 +243,8 @@ public class MainActivity extends AppCompatActivity {
         TabHost tabHost1 = (TabHost) findViewById(R.id.tabHost1);
         tabHost1.setup();
 
-        ArrayList<ContactItem> contactItems = getContactList();
-        initImageBitmaps(contactItems);
+        JSONArray jArray = getContactList();
+        initContactInfo(jArray);
 
 
         // 첫 번째 Tab. (탭 표시 텍스트:"TAB 1"), (페이지 뷰:"content1")
@@ -232,15 +270,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // adding images/photos and the names of corresponding contacts to each of their own lists
-    private void initImageBitmaps(ArrayList<ContactItem> contactItems) {
-        Log.d(TAG, "initImageBitmaps: preparing bitmaps");
-        ContentResolver cr = getContentResolver();
-        for (int j = 0; j < contactItems.size(); j++) {
-            Names.add(contactItems.get(j).getUser_name());
-            Numbers.add(contactItems.get(j).getUser_number());
-            Photos.add(loadContactPhoto(cr, contactItems.get(j).getPerson_id(), contactItems.get(j).getPhoto_id()));
+
+//    private void initImageBitmaps(ArrayList<ContactItem> contactItems) {
+//        Log.d(TAG, "initImageBitmaps: preparing bitmaps");
+//        ContentResolver cr = getContentResolver();
+//        for (int j = 0; j < contactItems.size(); j++) {
+//            Names.add(contactItems.get(j).getUser_name());
+//            Numbers.add(contactItems.get(j).getUser_number());
+//            Photos.add(loadContactPhoto(cr, contactItems.get(j).getPerson_id(), contactItems.get(j).getPhoto_id()));
+//        }
+//        initRecyclerView(Names, Numbers, Photos);
+//    }
+
+    private void initContactInfo(JSONArray jArray) {
+        Log.d(TAG, "initContactInfo: preparing contact info");
+
+        for (int j=0 ; j< jArray.length(); j++){
+            try {
+                Names.add(jArray.getJSONObject(j).getString("name"));
+                Numbers.add(jArray.getJSONObject(j).getString("number"));
+            }
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
-        initRecyclerView(Names, Numbers, Photos);
+        initRecyclerView(Names, Numbers);
     }
 
     private void initRecyclerView(ArrayList<String> Names, ArrayList<String> Numbers, ArrayList<Bitmap> Photos) {
@@ -252,7 +306,4 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
-
-
-
 
