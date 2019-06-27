@@ -52,10 +52,7 @@
                         android:id="@+id/recycler_view">
                     </androidx.recyclerview.widget.RecyclerView>
 
-<<<<<<< HEAD
-=======
 
->>>>>>> f20309f4519f1caa1c76c215e5400595fd19b028
                 </LinearLayout>
 
                 <!-- 두 번째 페이지. content2 -->

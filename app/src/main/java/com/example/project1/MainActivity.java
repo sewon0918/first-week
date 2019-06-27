@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
     //variables for RecyclerView ?
     private ArrayList<String> mNames = new ArrayList<>();
     private ArrayList<String> mImageUrls = new ArrayList<>();
-
+    private ArrayList<String> Names = new ArrayList<>();
+    private ArrayList<String> Numbers = new ArrayList<>();
     private TableLayout tablayout;
     private AppBarLayout appBarLayout;
 
@@ -135,14 +136,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.d(TAG, "onCreate: started.");
-
-        initImageBitmaps();
+        //Log.d(TAG, "onCreate: started.");
 
         TabHost tabHost1 = (TabHost) findViewById(R.id.tabHost1);
         tabHost1.setup();
 
         ArrayList<ContactItem> contactItems = getContactList();
+        initImageBitmaps(contactItems);
 
 
         // 첫 번째 Tab. (탭 표시 텍스트:"TAB 1"), (페이지 뷰:"content1")
@@ -168,34 +168,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // adding images/photos and the names of corresponding contacts to each of their own lists
-    private void initImageBitmaps(){
+    private void initImageBitmaps(ArrayList<ContactItem> contactItems){
         Log.d(TAG, "initImageBitmaps: preparing bitmaps");
 
-        mImageUrls.add("https://www.thelabradorsite.com/wp-content/uploads/2018/04/9-weeks.jpg");
-        mNames.add("Labrador Puppy");
-
-        mImageUrls.add("https://rlv.zcache.com/pembroke_welsh_corgi_puppy_postcard-rd3641220834848e6936aa22aca40087f_vgbaq_8byvr_540.jpg");
-        mNames.add("Corgi Puppy");
-
-        mImageUrls.add("https://www.warrenphotographic.co.uk/photography/bigs/40748-Cute-red-Toy-Poodle-puppy-white-background.jpg");
-        mNames.add("Poodle Puppy");
-
-        mImageUrls.add("https://i.ytimg.com/vi/wRx3Uvcktm8/maxresdefault.jpg");
-        mNames.add("Pug Puppy");
-
-        mImageUrls.add("https://i.pinimg.com/originals/3c/d2/a8/3cd2a844037b921028481f9f3f82d21f.jpg");
-        mNames.add("Husky Puppy");
-
-        mImageUrls.add("http://www.icewindshibas.com/wp-content/uploads/2017/07/red-resized-01.jpg");
-        mNames.add("Shiba Inu Puppy");
-
+//        mImageUrls.add("https://www.thelabradorsite.com/wp-content/uploads/2018/04/9-weeks.jpg");
+//        mNames.add("Labrador Puppy");
+//
+//        mImageUrls.add("https://rlv.zcache.com/pembroke_welsh_corgi_puppy_postcard-rd3641220834848e6936aa22aca40087f_vgbaq_8byvr_540.jpg");
+//        mNames.add("Corgi Puppy");
+//
+//        mImageUrls.add("https://www.warrenphotographic.co.uk/photography/bigs/40748-Cute-red-Toy-Poodle-puppy-white-background.jpg");
+//        mNames.add("Poodle Puppy");
+//
+//        mImageUrls.add("https://i.ytimg.com/vi/wRx3Uvcktm8/maxresdefault.jpg");
+//        mNames.add("Pug Puppy");
+//
+//        mImageUrls.add("https://i.pinimg.com/originals/3c/d2/a8/3cd2a844037b921028481f9f3f82d21f.jpg");
+//        mNames.add("Husky Puppy");
+//
+//        mImageUrls.add("http://www.icewindshibas.com/wp-content/uploads/2017/07/red-resized-01.jpg");
+//        mNames.add("Shiba Inu Puppy");
+        for (int j=0 ; j< contactItems.size(); j++){
+            Names.add(contactItems.get(j).getUser_name());
+            Numbers.add(contactItems.get(j).getUser_number());
+        }
         initRecyclerView();
     }
 
     private void initRecyclerView(){
         Log.d(TAG, "initRecyclerView: init recyclerView.");
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(mNames, mImageUrls, this);
+        //RecyclerViewAdapter adapter = new RecyclerViewAdapter(mNames, mImageUrls, this);
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(Names, Numbers, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

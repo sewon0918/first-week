@@ -21,13 +21,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     private static final String TAG = "RecyclerViewAdapter";
 
-    private ArrayList<String> mImageNames = new ArrayList<>();
-    private ArrayList<String> mImages = new ArrayList<>();
+    private ArrayList<String> Names = new ArrayList<>();
+    private ArrayList<String> Numbers = new ArrayList<>();
     private Context mContext;
 
-    public RecyclerViewAdapter(ArrayList<String> mImageNames, ArrayList<String> mImages, Context mContext) {
-        this.mImageNames = mImageNames;
-        this.mImages = mImages;
+    public RecyclerViewAdapter(ArrayList<String> Names, ArrayList<String> Numbers, Context mContext) {
+        this.Names = Names;
+        this.Numbers = Numbers;
         this.mContext = mContext;
     }
 
@@ -45,14 +45,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder: called.");  // this is simply for helping with debugging if needed
 
-        Glide.with(mContext)
-                .asBitmap()
-                .load(mImages.get(position))                // this is the image URL 
-                .into(holder.image);                // this is where the image is loaded into.
-                                                    // To reference the image view, we reference
-                                              // our view holder, then we reference our image
-                                              // widget which is the widget shown in layout_listitem
-        holder.imageName.setText(mImageNames.get(position));
+//        Glide.with(mContext)
+//                .asBitmap()
+//                .load(Numbers.get(position))                // this is the image URL
+//                .into(holder.image);
+
+        holder.number.setText(Names.get(position));
 
         // trying to open new page if you click a contact
         //holder.parentLayout.setOnClickListener(new View.OnClickListener() {
@@ -66,19 +64,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public int getItemCount() {
-        return mImageNames.size();
+        return Names.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        CircleImageView image;
-        TextView imageName;
+        TextView name;
+        TextView number;
         RelativeLayout parentLayout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            image = itemView.findViewById(R.id.image);
-            imageName = itemView.findViewById(R.id.image_name);
+            name = itemView.findViewById(R.id.name);
+            number = itemView.findViewById(R.id.number);
             parentLayout = itemView.findViewById(R.id.parent_layout);
         }
     }
