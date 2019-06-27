@@ -49,7 +49,6 @@
                         android:id="@+id/recycler_view">
                     </androidx.recyclerview.widget.RecyclerView>
 
-
                 </LinearLayout>
 
                 <!-- 두 번째 페이지. content2 -->
