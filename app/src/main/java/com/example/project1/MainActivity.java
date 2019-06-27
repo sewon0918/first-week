@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private AppBarLayout appBarLayout;
 
 
-    public class ContactItem implements Serializable{
+    /*public class ContactItem implements Serializable{
         private String user_number, user_name;
 //        private long photo_id=0, person_id=0;
         private int id;
@@ -98,9 +98,9 @@ public class MainActivity extends AppCompatActivity {
                 return getNumberChanged().equals(((ContactItem)o).getNumberChanged());
             return false;
         }
-    }
+    }*/
 
-    public ArrayList<ContactItem> getContactList(){
+    /*public ArrayList<ContactItem> getContactList(){
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
         String[] projection = new String[]{
                 ContactsContract.CommonDataKinds.Phone.NUMBER,
@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
 //                ContactsContract.Contacts.PHOTO_ID,
 //                ContactsContract.Contacts._ID
         };
+
         String[] selectionArgs = null;
         //String sortOrder = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + "COLLATE LOCALIZED ASC";
         Cursor cursor = getContentResolver().query(uri, projection, null, selectionArgs, null);
@@ -124,11 +125,46 @@ public class MainActivity extends AppCompatActivity {
                 hashlist.add(contactItem);
             }while (cursor.moveToNext());
         }
+
         ArrayList<ContactItem> contactItems = new ArrayList<>(hashlist);
+
+        // this is just for setting id for each contact..
         for (int i=0 ; i< contactItems.size(); i++){
             contactItems.get(i).setId(i);
         }
         return contactItems;
+    }*/
+
+    public JSONArray getContactList(){
+        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+        String[] projection = new String[]{
+                ContactsContract.CommonDataKinds.Phone.NUMBER,
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+//                ContactsContract.Contacts.PHOTO_ID,
+//                ContactsContract.Contacts._ID
+        };
+
+        String[] selectionArgs = null;
+        //String sortOrder = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + "COLLATE LOCALIZED ASC";
+        Cursor cursor = getContentResolver().query(uri, projection, null, selectionArgs, null);
+
+        JSONArray jArray = new JSONArray();
+
+        if (cursor.moveToFirst()){
+            do {
+                try {
+                    JSONObject sObject = new JSONObject();
+                    sObject.put("number", cursor.getString(0));
+                    sObject.put("name", cursor.getString(1));
+                    // sObject.put("photo", cursor.getLong(2));
+                    jArray.put(sObject);
+                }
+                catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }while (cursor.moveToNext());
+        }
+        return jArray;
     }
 
     @Override
@@ -140,8 +176,8 @@ public class MainActivity extends AppCompatActivity {
         TabHost tabHost1 = (TabHost) findViewById(R.id.tabHost1);
         tabHost1.setup();
 
-        ArrayList<ContactItem> contactItems = getContactList();
-        initImageBitmaps(contactItems);
+        JSONArray jArray = getContactList();
+        initContactInfo(jArray);
 
 
         // 첫 번째 Tab. (탭 표시 텍스트:"TAB 1"), (페이지 뷰:"content1")
@@ -167,14 +203,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // adding images/photos and the names of corresponding contacts to each of their own lists
-    private void initImageBitmaps(ArrayList<ContactItem> contactItems){
+    /*private void initImageBitmaps(ArrayList<ContactItem> contactItems){
         Log.d(TAG, "initImageBitmaps: preparing bitmaps");
 
         for (int j=0 ; j< contactItems.size(); j++){
             Names.add(contactItems.get(j).getUser_name());
             Numbers.add(contactItems.get(j).getUser_number());
         }
-        initRecyclerView( Names, Numbers);
+        initRecyclerView(Names, Numbers);
+    }*/
+
+    private void initContactInfo(JSONArray jArray) {
+        Log.d(TAG, "initContactInfo: preparing contact info");
+
+        for (int j=0 ; j< jArray.length(); j++){
+            try {
+                Names.add(jArray.getJSONObject(j).getString("name"));
+                Numbers.add(jArray.getJSONObject(j).getString("number"));
+            }
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        initRecyclerView(Names, Numbers);
     }
 
     private void initRecyclerView(ArrayList<String> Names, ArrayList<String> Numbers){
@@ -185,12 +236,4 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    }
-
-
-//    public void onClick02(View v) {
-//        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:010-1234-5678"));
-//        startActivity(intent);
-//    }
-
-
+}
