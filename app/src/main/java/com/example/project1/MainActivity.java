@@ -269,8 +269,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void initRecyclerView(ArrayList<String> Names, ArrayList<String> Numbers, ArrayList<Bitmap> Photos) {
         Log.d(TAG, "initRecyclerView: init recyclerView.");
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(Names, Numbers, Photos,this);
+        RecyclerView recyclerView = findViewById(R.id.recycler_view_tab1);
+        RecyclerViewAdapterTab1 adapter = new RecyclerViewAdapterTab1(Names, Numbers, Photos,this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

@@ -46,7 +46,8 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:layout_height="match_parent"
                         android:layout_width="match_parent"
-                        android:id="@+id/recycler_view">
+                        android:id="@+id/recycler_view_tab1"
+                        android:scrollbars="vertical">
                     </androidx.recyclerview.widget.RecyclerView>
 
                 </LinearLayout>
@@ -58,6 +59,12 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"
+                        android:id="@+id/recycler_view_tab2"
+                        android:scrollbars="vertical">
+                    </androidx.recyclerview.widget.RecyclerView>
 
                 </LinearLayout>
 
