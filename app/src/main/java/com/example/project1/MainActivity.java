@@ -39,8 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     //variables for RecyclerView ?
-//    private ArrayList<String> mNames = new ArrayList<>();
-//    private ArrayList<String> mImageUrls = new ArrayList<>();
+
     private ArrayList<String> Names = new ArrayList<>();
     private ArrayList<String> Numbers = new ArrayList<>();
     private TableLayout tablayout;
