@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
         };
 
         String[] selectionArgs = null;
-        String sortOrder = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + "ASC";
+        String sortOrder = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC";
         Cursor cursor = getContentResolver().query(uri, projection, null, selectionArgs, sortOrder);
 
         JSONArray jArray = new JSONArray();
