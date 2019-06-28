@@ -294,7 +294,9 @@ public class MainActivity extends AppCompatActivity {
         RecyclerViewAdapterTab2 adapterTab2 = new RecyclerViewAdapterTab2(this, tab2_gallery_photos);
         recyclerViewtab2.setAdapter(adapterTab2);
         recyclerViewtab2.setLayoutManager(new GridLayoutManager(this, 3));
-        //recyclerViewtab2.setItemAnimator(new DefaultItemAnimator());
+
+        /*recyclerViewtab2.setItemAnimator(new DefaultItemAnimator());
+        recyclerViewtab2.addOnItemTouchListener(new adapterTab2.RecyclerTouchListener(getApplicationContext(), recyclerViewtab2, new ));*/
     }
 
 

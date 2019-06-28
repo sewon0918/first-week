@@ -53,6 +53,7 @@ public class RecyclerViewAdapterTab2 extends RecyclerView.Adapter<RecyclerViewAd
                 Intent intent = new Intent(mContext, fullscreenActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("Gallery_Photos", mData);
+                //intent.putExtra("current_thumbnail", mData.get(position).getThumbnail());
                 intent.putExtras(bundle);
                 // start the activity
                 mContext.startActivity(intent);

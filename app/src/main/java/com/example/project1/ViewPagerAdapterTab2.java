@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -32,7 +33,7 @@ public class ViewPagerAdapterTab2 extends PagerAdapter {
 
     @Override
     public boolean isViewFromObject(View view, Object object){
-        return view==object;
+        return view==(RelativeLayout) object;
     }
 
     @Override
@@ -40,17 +41,9 @@ public class ViewPagerAdapterTab2 extends PagerAdapter {
         inflater = (LayoutInflater)activity.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.image_fullscreen_preview, container, false);
 
-        ImageView fullscreen_image = view.findViewById(R.id.fullscreen_image_preview);
+        ImageView fullscreen_image = view.findViewById(R.id.fullscreen_preview);
 
-        Gallery_Photo image = gallery_images.get(position);
-        fullscreen_image.setImageResource(image.getThumbnail());
-
-        /*DisplayMetrics dis = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(dis);
-        int height = dis.heightPixels;
-        int width = dis.widthPixels;
-        image.setMinimumHeight(height);
-        image.setMinimumWidth(width);*/
+        fullscreen_image.setImageResource(gallery_images.get(position).getThumbnail());
 
         container.addView(view);
 
@@ -59,6 +52,6 @@ public class ViewPagerAdapterTab2 extends PagerAdapter {
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        (container).removeView((View) object);
+        (container).removeView((RelativeLayout) object); //or (view)?
     }
 }
