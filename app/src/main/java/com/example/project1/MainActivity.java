@@ -1,5 +1,11 @@
 package com.example.project1;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -26,6 +32,8 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.net.Uri;
+import android.provider.ContactsContract;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -41,6 +49,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.ContentResolver;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "MainActivity";
@@ -49,15 +59,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //Manifest.permission.READ_EXTERNAL_STORAGE
     };
 
-
-
-    //variables for RecyclerView ?
+    //variables for Tab1
     private ArrayList<String> Names = new ArrayList<>();
     private ArrayList<String> Numbers = new ArrayList<>();
     private ArrayList<Bitmap> Photos = new ArrayList<>();
     private ArrayList<Bitmap> Gallery = new ArrayList<>();
     private ArrayList<String> imageList = new ArrayList<>();
     private String imageEncoded;
+
+    //variables for Tab2
+    private ArrayList<Gallery_Photo> tab2_gallery_photos = new ArrayList<>();
+
     private TableLayout tablayout;
     private AppBarLayout appBarLayout;
 
@@ -269,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            Numbers.add(contactItems.get(j).getUser_number());
 //            Photos.add(loadContactPhoto(cr, contactItems.get(j).getPerson_id(), contactItems.get(j).getPhoto_id()));
 //        }
-//        initRecyclerView(Names, Numbers, Photos);
+//        initTab1RecyclerView(Names, Numbers, Photos);
 //    }
 
     private void initContactInfo(JSONArray jArray) {
@@ -289,16 +301,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 e.printStackTrace();
             }
         }
-        initRecyclerView(Names, Numbers, Photos);
+        initTab1RecyclerView(Names, Numbers, Photos);
     }
 
-    private void initRecyclerView(ArrayList<String> Names, ArrayList<String> Numbers, ArrayList<Bitmap> Photos) {
-        Log.d(TAG, "initRecyclerView: init recyclerView.");
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(Names, Numbers, Photos,this);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    private void initTab1RecyclerView(ArrayList<String> Names, ArrayList<String> Numbers, ArrayList<Bitmap> Photos) {
+        Log.d(TAG, "initTab1RecyclerView: init recyclerView.");
+        RecyclerView recyclerViewtab1 = findViewById(R.id.recycler_view_tab1);
+        RecyclerViewAdapterTab1 adapterTab1 = new RecyclerViewAdapterTab1(Names, Numbers, Photos,this);
+        recyclerViewtab1.setAdapter(adapterTab1);
+        recyclerViewtab1.setLayoutManager(new LinearLayoutManager(this));
     }
+
+    private void initGalleryInfo() {
+        Log.d(TAG, "initGalleryInfo: preparing gallery info");
+
+        tab2_gallery_photos.add(new Gallery_Photo("blues_shop_silk", R.drawable.blue_shop_silk_flower));
+        tab2_gallery_photos.add(new Gallery_Photo("german_shepherd", R.drawable.german_shepherd));
+        tab2_gallery_photos.add(new Gallery_Photo("sycamore_yes", R.drawable.sycamore_yes));
+        tab2_gallery_photos.add(new Gallery_Photo("blue_eye_doggy", R.drawable.blue_eye_doggy));
+        tab2_gallery_photos.add(new Gallery_Photo("blue_butterfly", R.drawable.bluebutterfly));
+        tab2_gallery_photos.add(new Gallery_Photo("chihuahua", R.drawable.chihuahua));
+        tab2_gallery_photos.add(new Gallery_Photo("daylily_flower_and_buds_sharp", R.drawable.daylily_flower));
+        tab2_gallery_photos.add(new Gallery_Photo("flowervase", R.drawable.flowervase));
+        tab2_gallery_photos.add(new Gallery_Photo("puppy_development", R.drawable.puppy_development));
+        tab2_gallery_photos.add(new Gallery_Photo("rosebear", R.drawable.rosebear));
+        tab2_gallery_photos.add(new Gallery_Photo("treefaces", R.drawable.treefaces));
+
+        initTab2RecyclerView(tab2_gallery_photos);
+    }
+
+    private void initTab2RecyclerView(ArrayList<Gallery_Photo> tab2_gallery_photos) {
+        Log.d(TAG, "initTab2RecyclerView: init recyclerView for tab2.");
+        RecyclerView recyclerViewtab2 = findViewById(R.id.recycler_view_tab2);
+        RecyclerViewAdapterTab2 adapterTab2 = new RecyclerViewAdapterTab2(this, tab2_gallery_photos);
+        recyclerViewtab2.setAdapter(adapterTab2);
+        recyclerViewtab2.setLayoutManager(new GridLayoutManager(this, 3));
+
+        /*recyclerViewtab2.setItemAnimator(new DefaultItemAnimator());
+        recyclerViewtab2.addOnItemTouchListener(new adapterTab2.RecyclerTouchListener(getApplicationContext(), recyclerViewtab2, new ));*/
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -341,6 +383,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
             }
         });
+
+        initGalleryInfo();
 
         // 세 번째 Tab. (탭 표시 텍스트:"TAB 3"), (페이지 뷰:"content3")
         TabHost.TabSpec ts3 = tabHost1.newTabSpec("Tab Spec 3");

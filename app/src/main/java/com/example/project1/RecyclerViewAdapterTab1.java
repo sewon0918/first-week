@@ -18,9 +18,9 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
+public class RecyclerViewAdapterTab1 extends RecyclerView.Adapter<RecyclerViewAdapterTab1.ViewHolder> {
 
-    private static final String TAG = "RecyclerViewAdapter";
+    private static final String TAG = "RecyclerViewAdapterTab1";
    // private String tel;
 
     private ArrayList<String> Names = new ArrayList<>();
@@ -28,7 +28,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private ArrayList<Bitmap> Photos = new ArrayList<>();
     private Context mContext;
 
-    public RecyclerViewAdapter(ArrayList<String> Names, ArrayList<String> Numbers, ArrayList<Bitmap> Photos, Context mContext) {
+    public RecyclerViewAdapterTab1(ArrayList<String> Names, ArrayList<String> Numbers, ArrayList<Bitmap> Photos, Context mContext) {
         this.Names = Names;
         this.Numbers = Numbers;
         this.Photos = Photos;
