@@ -1,7 +1,6 @@
 package com.example.project1;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,12 +39,10 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Bitmap> Photos = new ArrayList<>();
 
     //variables for Tab2
-    private ArrayList<Bitmap> tab2_gallery_photos = new ArrayList<>();
+    private ArrayList<Bitmap> Gallery = new ArrayList<>();
 
     private TableLayout tablayout;
     private AppBarLayout appBarLayout;
-
-
 //    public class ContactItem implements Serializable {
 //        private String user_number, user_name;
 //        private long photo_id=0, person_id=0;
@@ -110,8 +107,6 @@ public class MainActivity extends AppCompatActivity {
 //            return false;
 //        }
 //    }
-
-
     /*public ArrayList<ContactItem> getContactList(){
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
         String[] projection = new String[]{
@@ -273,25 +268,13 @@ public class MainActivity extends AppCompatActivity {
     private void initGalleryInfo() {
         Log.d(TAG, "initGalleryInfo: preparing gallery info");
 
-       /* tab2_gallery_photos.add(new Gallery_Photo("blues_shop_silk", R.drawable.blue_shop_silk_flower));
-        tab2_gallery_photos.add(new Gallery_Photo("german_shepherd", R.drawable.german_shepherd));
-        tab2_gallery_photos.add(new Gallery_Photo("sycamore_yes", R.drawable.sycamore_yes));
-        tab2_gallery_photos.add(new Gallery_Photo("blue_eye_doggy", R.drawable.blue_eye_doggy));
-        tab2_gallery_photos.add(new Gallery_Photo("blue_butterfly", R.drawable.bluebutterfly));
-        tab2_gallery_photos.add(new Gallery_Photo("chihuahua", R.drawable.chihuahua));
-        tab2_gallery_photos.add(new Gallery_Photo("daylily_flower_and_buds_sharp", R.drawable.daylily_flower));
-        tab2_gallery_photos.add(new Gallery_Photo("flowervase", R.drawable.flowervase));
-        tab2_gallery_photos.add(new Gallery_Photo("puppy_development", R.drawable.puppy_development));
-        tab2_gallery_photos.add(new Gallery_Photo("rosebear", R.drawable.rosebear));
-        tab2_gallery_photos.add(new Gallery_Photo("treefaces", R.drawable.treefaces));
-*/
-        initTab2RecyclerView(tab2_gallery_photos);
+        initTab2RecyclerView(Gallery);
     }
 
-    private void initTab2RecyclerView(ArrayList<Bitmap> tab2_gallery_photos) {
+    private void initTab2RecyclerView(ArrayList<Bitmap> Gallery) {
         Log.d(TAG, "initTab2RecyclerView: init recyclerView for tab2.");
         RecyclerView recyclerViewtab2 = findViewById(R.id.recycler_view_tab2);
-        RecyclerViewAdapterTab2 adapterTab2 = new RecyclerViewAdapterTab2(this, tab2_gallery_photos);
+        RecyclerViewAdapterTab2 adapterTab2 = new RecyclerViewAdapterTab2(this, Gallery);
         recyclerViewtab2.setAdapter(adapterTab2);
         recyclerViewtab2.setLayoutManager(new GridLayoutManager(this, 3));
 
