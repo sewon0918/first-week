@@ -1,11 +1,5 @@
 package com.example.project1;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -26,16 +20,14 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import android.net.Uri;
-import android.provider.ContactsContract;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -47,15 +39,14 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
-
-import android.content.ContentResolver;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "MainActivity";
     String[] permission_list = {
             Manifest.permission.READ_CONTACTS,
+            Manifest.permission.CAMERA
+
             //Manifest.permission.READ_EXTERNAL_STORAGE
     };
 
@@ -63,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<String> Names = new ArrayList<>();
     private ArrayList<String> Numbers = new ArrayList<>();
     private ArrayList<Bitmap> Photos = new ArrayList<>();
-    //private ArrayList<Bitmap> Gallery = new ArrayList<>();
+    private ArrayList<Bitmap> Gallery = new ArrayList<>();
     private ArrayList<String> imageList = new ArrayList<>();
     private String imageEncoded;
 
@@ -82,10 +73,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView textViewPlayer1;
     private TextView textViewPlayer2;
     private TextView textViewTie;
-    private int PICK_IMAGE_REQUEST = 1;
-    //private TextView num;
+    private final int PICK_IMAGE_REQUEST = 1;
+    private TextView num;
     private String imagePath;
     private ArrayList<String> imagePathList= new ArrayList<>();
+    private final int TAKE_PICTURE = 2;
+
+
 
 
 //    public class ContactItem implements Serializable {
@@ -312,9 +306,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerViewtab1.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    private void initGalleryInfo(ArrayList<Bitmap> Gallery) {
+    private void initGalleryInfo() {
         Log.d(TAG, "initGalleryInfo: preparing gallery info");
-
+        initTab2RecyclerView(Gallery);
 //        tab2_gallery_photos.add(new Gallery_Photo("blues_shop_silk", R.drawable.blue_shop_silk_flower));
 //        tab2_gallery_photos.add(new Gallery_Photo("german_shepherd", R.drawable.german_shepherd));
 //        tab2_gallery_photos.add(new Gallery_Photo("sycamore_yes", R.drawable.sycamore_yes));
@@ -328,13 +322,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        tab2_gallery_photos.add(new Gallery_Photo("treefaces", R.drawable.treefaces));
 
 //        initTab2RecyclerView(tab2_gallery_photos);
-        initTab2RecyclerView(Gallery);
+
     }
 
-    private void initTab2RecyclerView(ArrayList<Bitmap> tab2_gallery_photos) {
+    private void initTab2RecyclerView(ArrayList<Bitmap> Gallery) {
         Log.d(TAG, "initTab2RecyclerView: init recyclerView for tab2.");
         RecyclerView recyclerViewtab2 = findViewById(R.id.recycler_view_tab2);
-        RecyclerViewAdapterTab2 adapterTab2 = new RecyclerViewAdapterTab2(this, tab2_gallery_photos);
+        RecyclerViewAdapterTab2 adapterTab2 = new RecyclerViewAdapterTab2(this, Gallery);
         recyclerViewtab2.setAdapter(adapterTab2);
         recyclerViewtab2.setLayoutManager(new GridLayoutManager(this, 3));
 
@@ -371,6 +365,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tabHost1.addTab(ts2);
 
         Button gallery = (Button)findViewById(R.id.button_gallery);
+        Button camera = (Button)findViewById(R.id.button_camera);
         //num = (TextView) findViewById(R.id.num);
         gallery.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View view){
@@ -379,11 +374,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // Show only images, no videos or anything else
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
-
                 // Always show the chooser (if there are multiple options available)
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
             }
         });
+
+        camera.setOnClickListener(new Button.OnClickListener(){
+            public void onClick(View view){
+                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(cameraIntent, TAKE_PICTURE);
+            }
+        });
+
         // 세 번째 Tab. (탭 표시 텍스트:"TAB 3"), (페이지 뷰:"content3")
         TabHost.TabSpec ts3 = tabHost1.newTabSpec("Tab Spec 3");
         ts3.setContent(R.id.content3);
@@ -414,50 +416,60 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //Gallery.clear();
         try{
-            if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
-                if(data.getClipData() != null){
-                    int count = data.getClipData().getItemCount();
-                    for (int i=0; i<count; i++){
-                        Uri imageUri = data.getClipData().getItemAt(i).getUri();
-                        getImageFilePath(imageUri);
-                    }
-                }
-                else if(data.getData() != null){
-                    Uri imgUri = data.getData();
-                    getImageFilePath(imgUri);
-                }
-//                for (int i=0; i<imagePathList.size(); i++){
-//                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(imagePathList.get(i)));
-//                    // Log.d(TAG, String.valueOf(bitmap));
-//                    Gallery.add(bitmap);
-//                }
-                //num.setText(String.valueOf(imagePathList.size()));
-                ArrayList<Bitmap> Gallery = new ArrayList<>();
-                for (int j=0 ; j< imagePathList.size(); j++){
-                    Bitmap bitmap1= BitmapFactory.decodeFile(imagePathList.get(j));
-                    Gallery.add(bitmap1);
-                }
-                initGalleryInfo(Gallery);
-//                for (int j=0 ; j< imagePathList.size(); j++){
-//                    final Bitmap bitmap1= BitmapFactory.decodeFile(imagePathList.get(j));
-//                    new Handler().postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            ImageView imageView = (ImageView) findViewById(R.id.imageView);
-//                            imageView.setImageBitmap(bitmap1);
-//                        }},2000);
-//                }
+            switch(requestCode){
+                case PICK_IMAGE_REQUEST:
+                    if (resultCode == RESULT_OK && data != null) {
+                        if(data.getClipData() != null){
+                            int count = data.getClipData().getItemCount();
+                            for (int i=0; i<count; i++){
+                                Uri imageUri = data.getClipData().getItemAt(i).getUri();
+                                getImageFilePath(imageUri);
+                            }
+                        }
+                        else if(data.getData() != null){
+                            Uri imgUri = data.getData();
+                            getImageFilePath(imgUri);
+                        }
 
-            }else{
-                Toast.makeText(MainActivity.this, "사진 선택을 취소하였습니다.", Toast.LENGTH_SHORT).show();
+                        //ArrayList<Bitmap> Gallery = new ArrayList<>();
+                        for (int j=0 ; j< imagePathList.size(); j++){
+                            Bitmap bitmap1= BitmapFactory.decodeFile(imagePathList.get(j));
+                            Gallery.add(bitmap1);
+                        }
+                        //num.setText(String.valueOf(Gallery.size()));
+                        initGalleryInfo();
+                    }else{
+                        Toast.makeText(MainActivity.this, "사진 선택을 취소하였습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+//                case TAKE_PICTURE:
+//                    if (resultCode == RESULT_OK && data.hasExtra("data")) {
+//                        Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+//                        if (bitmap != null) {
+//                            Gallery.add(bitmap);
+//                            //num.setText(String.valueOf(Gallery.size()));
+//                            //getImageFilePath(uri);
+//                        }
+//                        //num.setText(String.valueOf(Gallery.size()));
+//                        initGalleryInfo(Gallery);
+//                        //num.setText(String.valueOf(Gallery.size()));
+//                    }else{
+//                        Toast.makeText(MainActivity.this, "사진 찍기를 취소하였습니다.", Toast.LENGTH_SHORT).show();
+//
+//                    }
+//                    break;
             }
+
         }catch(Exception e){
             Toast.makeText(this, "Oops! 로딩에 오류가 있습니다.", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
-        super.onActivityResult(requestCode, resultCode, data);
+
     }
+
     public void getImageFilePath(Uri uri) {
 
         File file = new File(uri.getPath());
@@ -472,6 +484,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             cursor.close();
         }
     }
+
+
     public void checkPermission(){
         //현재 안드로이드 버전이 6.0미만이면 메서드를 종료한다.
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
@@ -485,7 +499,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //권한 허용을여부를 확인하는 창을 띄운다
                 requestPermissions(permission_list,0);
             }else{
-                initial();
+                if (permission == permission_list[permission_list.length-1]){
+                    initial();
+                }
+
             }
         }
     }

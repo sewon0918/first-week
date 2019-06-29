@@ -57,11 +57,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
-                    <Button
-                        android:id="@+id/button_gallery"
-                        android:layout_width="match_parent"
+                    <LinearLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="gallery"/>
+                        android:orientation="horizontal">
+                        <Button
+                            android:id="@+id/button_gallery"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="gallery"/>
+                        <Button
+                            android:id="@+id/button_camera"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="camera"/>
+                    </LinearLayout>
+
                     <TextView
                         android:id="@+id/num"
                         android:layout_width="wrap_content"
@@ -71,11 +82,11 @@
                         android:textStyle="bold"
                         android:textSize="20sp"
                         android:freezesText="true"/>
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/num"
-                        android:id="@+id/imageView" />
+                    <!--<ImageView-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_below="@+id/num"-->
+                        <!--android:id="@+id/imageView" />-->
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:layout_height="match_parent"

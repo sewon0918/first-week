@@ -49,7 +49,6 @@ public class RecyclerViewAdapterTab1 extends RecyclerView.Adapter<RecyclerViewAd
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         //Log.d(TAG, "onBindViewHolder: called.");  // this is simply for helping with debugging if needed
 
-
         holder.name.setText(Names.get(position));
         holder.number.setText(Numbers.get(position));
         holder.photo.setImageBitmap(Photos.get(position));

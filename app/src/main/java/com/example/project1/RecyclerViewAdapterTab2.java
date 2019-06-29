@@ -1,16 +1,11 @@
 package com.example.project1;
 
 import android.content.Context;
-import android.content.Intent;
-import android.nfc.Tag;
-import android.os.Bundle;
-import android.util.Log;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -23,9 +18,9 @@ public class RecyclerViewAdapterTab2 extends RecyclerView.Adapter<RecyclerViewAd
     private static final String TAG = "RecyclerViewAdapterTab2";
 
     private Context mContext;
-    private ArrayList<Gallery_Photo> mData;
+    private ArrayList<Bitmap> mData;
 
-    public RecyclerViewAdapterTab2(Context mContext, ArrayList<Gallery_Photo> mData) {
+    public RecyclerViewAdapterTab2(Context mContext, ArrayList<Bitmap> mData) {
         this.mContext = mContext;
         this.mData = mData;
     }
@@ -41,25 +36,25 @@ public class RecyclerViewAdapterTab2 extends RecyclerView.Adapter<RecyclerViewAd
 
     @Override
     public void onBindViewHolder(@NonNull TabTwoViewHolder holder, final int position) {
-        holder.img_thumbnail.setImageResource(mData.get(position).getThumbnail());
+        holder.img_thumbnail.setImageBitmap(mData.get(position));
 
         // Set click listener
-        holder.cardView.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick: clicked on: " + mData.get(position));
-
-                // passing data to the fullscreen activity
-                Intent intent = new Intent(mContext, fullscreenActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("Gallery_Photos", mData);
-                //intent.putExtra("current_thumbnail", mData.get(position).getThumbnail());
-                intent.putExtras(bundle);
-                // start the activity
-                mContext.startActivity(intent);
-                Toast.makeText(mContext, position + 1 + " of " + mData.size(), Toast.LENGTH_SHORT).show();
-            }
-        });
+//        holder.cardView.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//                Log.d(TAG, "onClick: clicked on: " + mData.get(position));
+//
+//                // passing data to the fullscreen activity
+//                Intent intent = new Intent(mContext, fullscreenActivity.class);
+//                Bundle bundle = new Bundle();
+//                bundle.putSerializable("Gallery_Photos", mData);
+//                //intent.putExtra("current_thumbnail", mData.get(position).getThumbnail());
+//                intent.putExtras(bundle);
+//                // start the activity
+//                mContext.startActivity(intent);
+//                Toast.makeText(mContext, position + 1 + " of " + mData.size(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
     }
 
     @Override
