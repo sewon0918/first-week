@@ -1,11 +1,15 @@
 package com.example.project1;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -39,22 +43,22 @@ public class RecyclerViewAdapterTab2 extends RecyclerView.Adapter<RecyclerViewAd
         holder.img_thumbnail.setImageBitmap(mData.get(position));
 
         // Set click listener
-//        holder.cardView.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View v) {
-//                Log.d(TAG, "onClick: clicked on: " + mData.get(position));
-//
-//                // passing data to the fullscreen activity
-//                Intent intent = new Intent(mContext, fullscreenActivity.class);
-//                Bundle bundle = new Bundle();
-//                bundle.putSerializable("Gallery_Photos", mData);
-//                //intent.putExtra("current_thumbnail", mData.get(position).getThumbnail());
-//                intent.putExtras(bundle);
-//                // start the activity
-//                mContext.startActivity(intent);
-//                Toast.makeText(mContext, position + 1 + " of " + mData.size(), Toast.LENGTH_SHORT).show();
-//            }
-//        });
+        holder.cardView.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: clicked on: " + mData.get(position));
+
+                // passing data to the fullscreen activity
+                Intent intent = new Intent(mContext, FullscreenActivity2.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("Gallery_Photos", mData);
+                //intent.putExtra("current_thumbnail", mData.get(position).getThumbnail());
+                intent.putExtras(bundle);
+                // start the activity
+                mContext.startActivity(intent);
+                Toast.makeText(mContext, position + 1 + " of " + mData.size(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
