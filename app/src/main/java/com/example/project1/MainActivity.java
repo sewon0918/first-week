@@ -1,7 +1,11 @@
 package com.example.project1;
 
-import android.Manifest;
-import android.content.ContentResolver;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -64,20 +68,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TableLayout tablayout;
     private AppBarLayout appBarLayout;
 
-    private Button[][] buttons = new Button[10][10];
-    private boolean player1Turn = true;
-    private int roundCount;
-    private int player1Points;
-    private int player2Points;
-    private int tiePoints;
-    private TextView textViewPlayer1;
-    private TextView textViewPlayer2;
-    private TextView textViewTie;
-    private final int PICK_IMAGE_REQUEST = 1;
-    private TextView num;
-    private String imagePath;
-    private ArrayList<String> imagePathList= new ArrayList<>();
-    private final int TAKE_PICTURE = 2;
 
 //    public class ContactItem implements Serializable {
 //        private String user_number, user_name;
