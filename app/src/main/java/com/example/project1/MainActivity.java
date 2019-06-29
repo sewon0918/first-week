@@ -306,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerViewtab1.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    private void initGalleryInfo() {
+    private void initGalleryInfo(ArrayList<Bitmap> Gallery) {
         Log.d(TAG, "initGalleryInfo: preparing gallery info");
         initTab2RecyclerView(Gallery);
 //        tab2_gallery_photos.add(new Gallery_Photo("blues_shop_silk", R.drawable.blue_shop_silk_flower));
@@ -421,6 +421,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try{
             switch(requestCode){
                 case PICK_IMAGE_REQUEST:
+                    imagePathList = new ArrayList<>();
                     if (resultCode == RESULT_OK && data != null) {
                         if(data.getClipData() != null){
                             int count = data.getClipData().getItemCount();
@@ -429,10 +430,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 getImageFilePath(imageUri);
                             }
                         }
-                        else if(data.getData() != null){
-                            Uri imgUri = data.getData();
-                            getImageFilePath(imgUri);
-                        }
+//                        else if(data.getData() != null){
+//                            Uri imgUri = data.getData();
+//                            getImageFilePath(imgUri);
+//                        }
 
                         //ArrayList<Bitmap> Gallery = new ArrayList<>();
                         for (int j=0 ; j< imagePathList.size(); j++){
@@ -440,7 +441,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             Gallery.add(bitmap1);
                         }
                         //num.setText(String.valueOf(Gallery.size()));
-                        initGalleryInfo();
+                        initGalleryInfo(Gallery);
                     }else{
                         Toast.makeText(MainActivity.this, "사진 선택을 취소하였습니다.", Toast.LENGTH_SHORT).show();
                     }
