@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<String> Names = new ArrayList<>();
     private ArrayList<String> Numbers = new ArrayList<>();
     private ArrayList<Bitmap> Photos = new ArrayList<>();
-    private ArrayList<Bitmap> Gallery = new ArrayList<>();
+    //private ArrayList<Bitmap> Gallery = new ArrayList<>();
     private ArrayList<String> imageList = new ArrayList<>();
     private String imageEncoded;
 
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView textViewPlayer2;
     private TextView textViewTie;
     private int PICK_IMAGE_REQUEST = 1;
-    private TextView num;
+    //private TextView num;
     private String imagePath;
     private ArrayList<String> imagePathList= new ArrayList<>();
 
@@ -312,25 +312,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerViewtab1.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    private void initGalleryInfo() {
+    private void initGalleryInfo(ArrayList<Bitmap> Gallery) {
         Log.d(TAG, "initGalleryInfo: preparing gallery info");
 
-        tab2_gallery_photos.add(new Gallery_Photo("blues_shop_silk", R.drawable.blue_shop_silk_flower));
-        tab2_gallery_photos.add(new Gallery_Photo("german_shepherd", R.drawable.german_shepherd));
-        tab2_gallery_photos.add(new Gallery_Photo("sycamore_yes", R.drawable.sycamore_yes));
-        tab2_gallery_photos.add(new Gallery_Photo("blue_eye_doggy", R.drawable.blue_eye_doggy));
-        tab2_gallery_photos.add(new Gallery_Photo("blue_butterfly", R.drawable.bluebutterfly));
-        tab2_gallery_photos.add(new Gallery_Photo("chihuahua", R.drawable.chihuahua));
-        tab2_gallery_photos.add(new Gallery_Photo("daylily_flower_and_buds_sharp", R.drawable.daylily_flower));
-        tab2_gallery_photos.add(new Gallery_Photo("flowervase", R.drawable.flowervase));
-        tab2_gallery_photos.add(new Gallery_Photo("puppy_development", R.drawable.puppy_development));
-        tab2_gallery_photos.add(new Gallery_Photo("rosebear", R.drawable.rosebear));
-        tab2_gallery_photos.add(new Gallery_Photo("treefaces", R.drawable.treefaces));
+//        tab2_gallery_photos.add(new Gallery_Photo("blues_shop_silk", R.drawable.blue_shop_silk_flower));
+//        tab2_gallery_photos.add(new Gallery_Photo("german_shepherd", R.drawable.german_shepherd));
+//        tab2_gallery_photos.add(new Gallery_Photo("sycamore_yes", R.drawable.sycamore_yes));
+//        tab2_gallery_photos.add(new Gallery_Photo("blue_eye_doggy", R.drawable.blue_eye_doggy));
+//        tab2_gallery_photos.add(new Gallery_Photo("blue_butterfly", R.drawable.bluebutterfly));
+//        tab2_gallery_photos.add(new Gallery_Photo("chihuahua", R.drawable.chihuahua));
+//        tab2_gallery_photos.add(new Gallery_Photo("daylily_flower_and_buds_sharp", R.drawable.daylily_flower));
+//        tab2_gallery_photos.add(new Gallery_Photo("flowervase", R.drawable.flowervase));
+//        tab2_gallery_photos.add(new Gallery_Photo("puppy_development", R.drawable.puppy_development));
+//        tab2_gallery_photos.add(new Gallery_Photo("rosebear", R.drawable.rosebear));
+//        tab2_gallery_photos.add(new Gallery_Photo("treefaces", R.drawable.treefaces));
 
-        initTab2RecyclerView(tab2_gallery_photos);
+//        initTab2RecyclerView(tab2_gallery_photos);
+        initTab2RecyclerView(Gallery);
     }
 
-    private void initTab2RecyclerView(ArrayList<Gallery_Photo> tab2_gallery_photos) {
+    private void initTab2RecyclerView(ArrayList<Bitmap> tab2_gallery_photos) {
         Log.d(TAG, "initTab2RecyclerView: init recyclerView for tab2.");
         RecyclerView recyclerViewtab2 = findViewById(R.id.recycler_view_tab2);
         RecyclerViewAdapterTab2 adapterTab2 = new RecyclerViewAdapterTab2(this, tab2_gallery_photos);
@@ -370,7 +371,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tabHost1.addTab(ts2);
 
         Button gallery = (Button)findViewById(R.id.button_gallery);
-        num = (TextView) findViewById(R.id.num);
+        //num = (TextView) findViewById(R.id.num);
         gallery.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View view){
                 Intent intent = new Intent();
@@ -383,9 +384,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
             }
         });
-
-        initGalleryInfo();
-
         // 세 번째 Tab. (탭 표시 텍스트:"TAB 3"), (페이지 뷰:"content3")
         TabHost.TabSpec ts3 = tabHost1.newTabSpec("Tab Spec 3");
         ts3.setContent(R.id.content3);
@@ -434,14 +432,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                    // Log.d(TAG, String.valueOf(bitmap));
 //                    Gallery.add(bitmap);
 //                }
-                num.setText(String.valueOf(imagePathList.size()));
+                //num.setText(String.valueOf(imagePathList.size()));
+                ArrayList<Bitmap> Gallery = new ArrayList<>();
+                for (int j=0 ; j< imagePathList.size(); j++){
+                    Bitmap bitmap1= BitmapFactory.decodeFile(imagePathList.get(j));
+                    Gallery.add(bitmap1);
+                }
+                initGalleryInfo(Gallery);
 //                for (int j=0 ; j< imagePathList.size(); j++){
-//                    final String str = String.valueOf(imagePathList.size()-j);
 //                    final Bitmap bitmap1= BitmapFactory.decodeFile(imagePathList.get(j));
 //                    new Handler().postDelayed(new Runnable() {
 //                        @Override
 //                        public void run() {
-//                            num.setText(str);
 //                            ImageView imageView = (ImageView) findViewById(R.id.imageView);
 //                            imageView.setImageBitmap(bitmap1);
 //                        }},2000);
