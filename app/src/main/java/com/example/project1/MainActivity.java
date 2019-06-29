@@ -15,7 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
 import android.provider.ContactsContract;
-import android.provider.MediaStore;
+import android.provider.MediaStore.Images;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -37,8 +37,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -59,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String imageEncoded;
 
     //variables for Tab2
-    private ArrayList<Gallery_Photo> tab2_gallery_photos = new ArrayList<>();
 
     private TableLayout tablayout;
     private AppBarLayout appBarLayout;
@@ -78,9 +78,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String imagePath;
     private ArrayList<String> imagePathList= new ArrayList<>();
     private final int TAKE_PICTURE = 2;
-
-
-
 
 //    public class ContactItem implements Serializable {
 //        private String user_number, user_name;
@@ -146,8 +143,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            return false;
 //        }
 //    }
-
-
     /*public ArrayList<ContactItem> getContactList(){
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
         String[] projection = new String[]{
@@ -242,6 +237,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.d("PHOTO", "second try failed to load photo");
         return null;
     }
+
     public Bitmap resizingBitmap(Bitmap oBitmap){
         if (oBitmap == null)
             return null;
@@ -343,8 +339,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         //Log.d(TAG, "onCreate: started.");
         checkPermission();
-
     }
+
     public void initial(){
         TabHost tabHost1 = (TabHost) findViewById(R.id.tabHost1);
         tabHost1.setup();
@@ -426,42 +422,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         if(data.getClipData() != null){
                             int count = data.getClipData().getItemCount();
                             for (int i=0; i<count; i++){
-                                Uri imageUri = data.getClipData().getItemAt(i).getUri();
-                                getImageFilePath(imageUri);
+//                                Uri imageUri = data.getClipData().getItemAt(i).getUri();
+//                                getImageFilePath(imageUri);
+                                Uri uri = data.getClipData().getItemAt(i).getUri();
+                                Bitmap bm = Images.Media.getBitmap(getContentResolver(), uri);
+
+                                Gallery.add(bm);
                             }
                         }
-//                        else if(data.getData() != null){
+                        else if(data.getData() != null){
 //                            Uri imgUri = data.getData();
 //                            getImageFilePath(imgUri);
-//                        }
-
-                        //ArrayList<Bitmap> Gallery = new ArrayList<>();
-                        for (int j=0 ; j< imagePathList.size(); j++){
-                            Bitmap bitmap1= BitmapFactory.decodeFile(imagePathList.get(j));
-                            Gallery.add(bitmap1);
+                            InputStream in = getContentResolver().openInputStream(data.getData());
+                            Bitmap img = BitmapFactory.decodeStream(in);
+                            in.close();
+                            Gallery.add(img);
                         }
-                        //num.setText(String.valueOf(Gallery.size()));
                         initGalleryInfo(Gallery);
                     }else{
                         Toast.makeText(MainActivity.this, "사진 선택을 취소하였습니다.", Toast.LENGTH_SHORT).show();
                     }
                     break;
-//                case TAKE_PICTURE:
-//                    if (resultCode == RESULT_OK && data.hasExtra("data")) {
-//                        Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-//                        if (bitmap != null) {
-//                            Gallery.add(bitmap);
-//                            //num.setText(String.valueOf(Gallery.size()));
-//                            //getImageFilePath(uri);
-//                        }
-//                        //num.setText(String.valueOf(Gallery.size()));
-//                        initGalleryInfo(Gallery);
-//                        //num.setText(String.valueOf(Gallery.size()));
-//                    }else{
-//                        Toast.makeText(MainActivity.this, "사진 찍기를 취소하였습니다.", Toast.LENGTH_SHORT).show();
-//
-//                    }
-//                    break;
+                case TAKE_PICTURE:
+                    if (resultCode == RESULT_OK && data.hasExtra("data")) {
+                        Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                        if (bitmap != null) {
+                            Gallery.add(bitmap);
+
+                        }
+                        //num.setText(String.valueOf(Gallery.size()));
+                        initGalleryInfo(Gallery);
+                        //num.setText(String.valueOf(Gallery.size()));
+                    }else{
+                        Toast.makeText(MainActivity.this, "사진 찍기를 취소하였습니다.", Toast.LENGTH_SHORT).show();
+
+                    }
+                    break;
             }
 
         }catch(Exception e){
@@ -471,40 +467,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    public void getImageFilePath(Uri uri) {
-
-        File file = new File(uri.getPath());
-        String[] filePath = file.getPath().split(":");
-        String image_id = filePath[filePath.length - 1];
-
-        Cursor cursor = getContentResolver().query(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, MediaStore.Images.Media._ID + " = ? ", new String[]{image_id}, null);
-        if (cursor!=null) {
-            cursor.moveToFirst();
-            imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-            imagePathList.add(imagePath);
-            cursor.close();
-        }
-    }
-
 
     public void checkPermission(){
         //현재 안드로이드 버전이 6.0미만이면 메서드를 종료한다.
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
             return;
-
+        List<String> PermissionRqList = new ArrayList<>();
         for(String permission : permission_list){
             //권한 허용 여부를 확인한다.
             int chk = checkCallingOrSelfPermission(permission);
 
             if(chk == PackageManager.PERMISSION_DENIED){
                 //권한 허용을여부를 확인하는 창을 띄운다
-                requestPermissions(permission_list,0);
-            }else{
-                if (permission == permission_list[permission_list.length-1]){
-                    initial();
-                }
-
+                PermissionRqList.add(permission);
+                //requestPermissions(permission_list,0);
             }
+        }
+        if(!PermissionRqList.isEmpty()){
+            requestPermissions(PermissionRqList.toArray(new String[PermissionRqList.size()]),0);
+        }
+        else{
+            initial();
         }
     }
     @Override
@@ -512,17 +495,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode==0)
         {
-            for(int i=0; i<grantResults.length; i++)
-            {
-                //허용됐다면
-                if(grantResults[i]==PackageManager.PERMISSION_GRANTED){
-                    initial();
+            if(grantResults.length > 0) {
+                for (int i = 0; i < grantResults.length; i++) {
+                    //허용됐다면
+                    if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(getApplicationContext(), "앱권한설정하세요", Toast.LENGTH_LONG).show();
+                        finish();
+                    }
                 }
-                else {
-                    Toast.makeText(getApplicationContext(),"앱권한설정하세요",Toast.LENGTH_LONG).show();
-                    finish();
-                }
+            } else {
+                Toast.makeText(getApplicationContext(), "앱권한설정하세요", Toast.LENGTH_LONG).show();
+                finish();
             }
+            initial();
         }
     }
 

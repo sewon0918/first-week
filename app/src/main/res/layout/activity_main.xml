@@ -73,15 +73,15 @@
                             android:text="camera"/>
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/num"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="number of pictures"
-                        android:textColor="#ffff0000"
-                        android:textStyle="bold"
-                        android:textSize="20sp"
-                        android:freezesText="true"/>
+                    <!--<TextView-->
+                        <!--android:id="@+id/num"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:text="number of pictures"-->
+                        <!--android:textColor="#ffff0000"-->
+                        <!--android:textStyle="bold"-->
+                        <!--android:textSize="20sp"-->
+                        <!--android:freezesText="true"/>-->
                     <!--<ImageView-->
                         <!--android:layout_width="wrap_content"-->
                         <!--android:layout_height="wrap_content"-->
