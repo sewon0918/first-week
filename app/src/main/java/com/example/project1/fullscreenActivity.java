@@ -14,22 +14,24 @@ public class fullscreenActivity extends AppCompatActivity {
 
     ViewPager viewPager;
     ViewPagerAdapterTab2 adapter;
-    ArrayList<Gallery_Photo> images;
-    Bundle bundle;
+    ArrayList gallery_photos;
+    //Bundle bundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view_pager);
+        gallery_photos = new ArrayList<>();
 
         // Receive Data
-        Intent intent = getIntent();
+        //Intent intent = getIntent();
         //int current_image = intent.getExtras().getInt("current_thumbnail");
-        bundle = intent.getExtras();
-        images = (ArrayList<Gallery_Photo>) bundle.getSerializable("Gallery_Photos");
+        //bundle = intent.getExtras();
+        gallery_photos = (ArrayList) getIntent().getParcelableArrayListExtra("gallery_photos");
+        //images = (ArrayList<Gallery_Photo>) bundle.getSerializable("Gallery_Photos");
 
         viewPager = findViewById(R.id.viewpager);
-        adapter = new ViewPagerAdapterTab2(fullscreenActivity.this, images);
+        adapter = new ViewPagerAdapterTab2(fullscreenActivity.this, gallery_photos);
         viewPager.setAdapter(adapter);
     }
 }

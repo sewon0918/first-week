@@ -50,11 +50,9 @@ public class RecyclerViewAdapterTab2 extends RecyclerView.Adapter<RecyclerViewAd
                 Log.d(TAG, "onClick: clicked on: " + mData.get(position));
 
                 // passing data to the fullscreen activity
-                Intent intent = new Intent(mContext, fullscreenActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("Gallery_Photos", mData);
+                Intent intent = new Intent(mContext, FullscreenActivity2.class);
                 //intent.putExtra("current_thumbnail", mData.get(position).getThumbnail());
-                intent.putExtras(bundle);
+                intent.putExtra("bitmaps", mData);
                 // start the activity
                 mContext.startActivity(intent);
                 Toast.makeText(mContext, position + 1 + " of " + mData.size(), Toast.LENGTH_SHORT).show();
