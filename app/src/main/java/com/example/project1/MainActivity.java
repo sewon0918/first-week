@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -63,12 +65,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<String> imageList = new ArrayList<>();
     private String imageEncoded;
 
-    //variables for Tab2
+    //variables for Tab2&3
+    private Button[][] buttons = new Button[10][10];
+    private boolean player1Turn = true;
+    private int roundCount;
+    private int player1Points;
+    private int player2Points;
+    private int tiePoints;
+    private TextView textViewPlayer1;
+    private TextView textViewPlayer2;
+    private TextView textViewTie;
+    private final int PICK_IMAGE_REQUEST = 1;
+    private TextView num;
+    private String imagePath;
+    private ArrayList<String> imagePathList= new ArrayList<>();
+    private final int TAKE_PICTURE = 2;
+
 
     private TableLayout tablayout;
     private AppBarLayout appBarLayout;
-
-
 //    public class ContactItem implements Serializable {
 //        private String user_number, user_name;
 //        private long photo_id=0, person_id=0;
@@ -132,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                return getNumberChanged().equals(((ContactItem) o).getNumberChanged());
 //            return false;
 //        }
-//    }
+//
     /*public ArrayList<ContactItem> getContactList(){
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
         String[] projection = new String[]{
@@ -160,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         ArrayList<ContactItem> contactItems = new ArrayList<>(hashlist);
-
 
         // this is just for setting id for each contact..
         for (int i=0 ; i< contactItems.size(); i++){
@@ -295,20 +309,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initGalleryInfo(ArrayList<Bitmap> Gallery) {
         Log.d(TAG, "initGalleryInfo: preparing gallery info");
         initTab2RecyclerView(Gallery);
-//        tab2_gallery_photos.add(new Gallery_Photo("blues_shop_silk", R.drawable.blue_shop_silk_flower));
-//        tab2_gallery_photos.add(new Gallery_Photo("german_shepherd", R.drawable.german_shepherd));
-//        tab2_gallery_photos.add(new Gallery_Photo("sycamore_yes", R.drawable.sycamore_yes));
-//        tab2_gallery_photos.add(new Gallery_Photo("blue_eye_doggy", R.drawable.blue_eye_doggy));
-//        tab2_gallery_photos.add(new Gallery_Photo("blue_butterfly", R.drawable.bluebutterfly));
-//        tab2_gallery_photos.add(new Gallery_Photo("chihuahua", R.drawable.chihuahua));
-//        tab2_gallery_photos.add(new Gallery_Photo("daylily_flower_and_buds_sharp", R.drawable.daylily_flower));
-//        tab2_gallery_photos.add(new Gallery_Photo("flowervase", R.drawable.flowervase));
-//        tab2_gallery_photos.add(new Gallery_Photo("puppy_development", R.drawable.puppy_development));
-//        tab2_gallery_photos.add(new Gallery_Photo("rosebear", R.drawable.rosebear));
-//        tab2_gallery_photos.add(new Gallery_Photo("treefaces", R.drawable.treefaces));
-
-//        initTab2RecyclerView(tab2_gallery_photos);
-
     }
 
     private void initTab2RecyclerView(ArrayList<Bitmap> Gallery) {
@@ -317,11 +317,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         RecyclerViewAdapterTab2 adapterTab2 = new RecyclerViewAdapterTab2(this, Gallery);
         recyclerViewtab2.setAdapter(adapterTab2);
         recyclerViewtab2.setLayoutManager(new GridLayoutManager(this, 3));
-
-        /*recyclerViewtab2.setItemAnimator(new DefaultItemAnimator());
-        recyclerViewtab2.addOnItemTouchListener(new adapterTab2.RecyclerTouchListener(getApplicationContext(), recyclerViewtab2, new ));*/
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -456,7 +452,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
-
 
     public void checkPermission(){
         //현재 안드로이드 버전이 6.0미만이면 메서드를 종료한다.
