@@ -431,8 +431,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
                         }
                         else if(data.getData() != null){
-//                            Uri imgUri = data.getData();
-//                            getImageFilePath(imgUri);
                             InputStream in = getContentResolver().openInputStream(data.getData());
                             Bitmap img = BitmapFactory.decodeStream(in);
                             in.close();
@@ -586,11 +584,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL,0,0);
         toast.show();
         updatePointsText();
+        for (int i=0; i<10; i++){
+            for (int j=0; j<10; j++){
+                buttons[i][j].setEnabled(false);
+            }
+        }
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 resetBoard();
-            }}, 2000);
+                for (int i=0; i<10; i++){
+                    for (int j=0; j<10; j++){
+                        buttons[i][j].setEnabled(true);
+                    }
+                }
+            }},2000);
+
     }
     private void player2Wins(){
         player2Points++;
@@ -598,11 +607,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         toast2.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL,0,0);
         toast2.show();
         updatePointsText();
+        for (int i=0; i<10; i++){
+            for (int j=0; j<10; j++){
+                buttons[i][j].setEnabled(false);
+            }
+        }
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 resetBoard();
+                for (int i=0; i<10; i++){
+                    for (int j=0; j<10; j++){
+                        buttons[i][j].setEnabled(true);
+                    }
+                }
             }},2000);
+
     }
     private void draw(){
         tiePoints++;
