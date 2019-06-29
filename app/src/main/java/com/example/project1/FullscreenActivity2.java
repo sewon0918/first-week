@@ -121,7 +121,7 @@ public class FullscreenActivity2 extends AppCompatActivity {
         btnPrev.setOnClickListener(onClickListener(0));
         btnNext.setOnClickListener(onClickListener(1));
 
-        setImagesData();
+        //setImagesData();
 
         // init viewpager adapter and attach
         adapter = new ViewPagerAdapterTab2(getSupportFragmentManager(), gallery_photos);
@@ -161,11 +161,11 @@ public class FullscreenActivity2 extends AppCompatActivity {
         };
     }
 
-    private void setImagesData() {
+    /*private void setImagesData() {
         for (int i = 0; i < gallery_photos.size(); i++) {
             images.add(gallery_photos[i].getThumbnail());
         }
-    }
+    }*/
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {

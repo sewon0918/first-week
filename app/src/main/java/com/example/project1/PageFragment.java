@@ -1,6 +1,7 @@
 package com.example.project1;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,15 +10,24 @@ import android.widget.ImageView;
 
 import androidx.fragment.app.Fragment;
 
+import java.io.ByteArrayOutputStream;
+
 public class PageFragment extends Fragment {
 
-    private int imageResource;
+    //private int imageResource;
     private Bitmap bitmap;
+    private Bitmap gallery_bitmap;
 
     public static PageFragment getInstance(Bitmap resourceBitmap) {
         PageFragment f = new PageFragment();
         Bundle args = new Bundle();
-        args.putInt("image_source", resourceBitmap);
+
+        /*ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        resourceBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        args.putByteArray("image_bitmap", byteArray);*/
+
+        args.putParcelable("image_bitmap", resourceBitmap);
         f.setArguments(args);
         return f;
     }
@@ -25,7 +35,11 @@ public class PageFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        imageResource = getArguments().getInt("image_source");
+
+        /*byte[] byteArray = getArguments().getByteArray("image_bitmap");
+        gallery_bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);*/
+
+        gallery_bitmap = getArguments().getParcelable("image_bitmap");
     }
 
     @Override
@@ -36,19 +50,19 @@ public class PageFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ImageView imageView = (ImageView) view.findViewById(R.id.fullscreen_preview);
+        ImageView imageView = view.findViewById(R.id.fullscreen_preview);
 
-        BitmapFactory.Options o = new BitmapFactory.Options();
+        /*BitmapFactory.Options o = new BitmapFactory.Options();
         o.inSampleSize = 4;
         o.inDither = false;
-        bitmap = BitmapFactory.decodeResource(getResources(), imageResource, o);
-        imageView.setImageBitmap(bitmap);
+        bitmap = BitmapFactory.decodeResource(getResources(), imageResource, o);*/
+        imageView.setImageBitmap(gallery_bitmap);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        bitmap.recycle();
-        bitmap = null;
+        gallery_bitmap.recycle();
+        gallery_bitmap = null;
     }
 }
