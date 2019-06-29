@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Bitmap> Photos = new ArrayList<>();
 
     //variables for Tab2
-    private ArrayList<Gallery_Photo> tab2_gallery_photos = new ArrayList<>();
+    private ArrayList<Bitmap> tab2_gallery_photos = new ArrayList<>();
 
     private TableLayout tablayout;
     private AppBarLayout appBarLayout;
@@ -273,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
     private void initGalleryInfo() {
         Log.d(TAG, "initGalleryInfo: preparing gallery info");
 
-        tab2_gallery_photos.add(new Gallery_Photo("blues_shop_silk", R.drawable.blue_shop_silk_flower));
+       /* tab2_gallery_photos.add(new Gallery_Photo("blues_shop_silk", R.drawable.blue_shop_silk_flower));
         tab2_gallery_photos.add(new Gallery_Photo("german_shepherd", R.drawable.german_shepherd));
         tab2_gallery_photos.add(new Gallery_Photo("sycamore_yes", R.drawable.sycamore_yes));
         tab2_gallery_photos.add(new Gallery_Photo("blue_eye_doggy", R.drawable.blue_eye_doggy));
@@ -284,11 +284,11 @@ public class MainActivity extends AppCompatActivity {
         tab2_gallery_photos.add(new Gallery_Photo("puppy_development", R.drawable.puppy_development));
         tab2_gallery_photos.add(new Gallery_Photo("rosebear", R.drawable.rosebear));
         tab2_gallery_photos.add(new Gallery_Photo("treefaces", R.drawable.treefaces));
-
+*/
         initTab2RecyclerView(tab2_gallery_photos);
     }
 
-    private void initTab2RecyclerView(ArrayList<Gallery_Photo> tab2_gallery_photos) {
+    private void initTab2RecyclerView(ArrayList<Bitmap> tab2_gallery_photos) {
         Log.d(TAG, "initTab2RecyclerView: init recyclerView for tab2.");
         RecyclerView recyclerViewtab2 = findViewById(R.id.recycler_view_tab2);
         RecyclerViewAdapterTab2 adapterTab2 = new RecyclerViewAdapterTab2(this, tab2_gallery_photos);

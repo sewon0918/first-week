@@ -2,6 +2,7 @@ package com.example.project1;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,9 +24,9 @@ public class RecyclerViewAdapterTab2 extends RecyclerView.Adapter<RecyclerViewAd
     private static final String TAG = "RecyclerViewAdapterTab2";
 
     private Context mContext;
-    private ArrayList<Gallery_Photo> mData;
+    private ArrayList<Bitmap> mData;
 
-    public RecyclerViewAdapterTab2(Context mContext, ArrayList<Gallery_Photo> mData) {
+    public RecyclerViewAdapterTab2(Context mContext, ArrayList<Bitmap> mData) {
         this.mContext = mContext;
         this.mData = mData;
     }
@@ -41,7 +42,7 @@ public class RecyclerViewAdapterTab2 extends RecyclerView.Adapter<RecyclerViewAd
 
     @Override
     public void onBindViewHolder(@NonNull TabTwoViewHolder holder, final int position) {
-        holder.img_thumbnail.setImageResource(mData.get(position).getThumbnail());
+        holder.img_thumbnail.setImageBitmap(mData.get(position));
 
         // Set click listener
         holder.cardView.setOnClickListener(new View.OnClickListener(){
