@@ -17,7 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 public class AddContact extends AppCompatActivity implements View.OnClickListener {
-    //public MainActivity MainActivity;
+    //public WeekOneActivity WeekOneActivity;
     final int ADD_CONTACT_PHOTO=4;
     private Intent contact = new Intent();
 
