@@ -55,7 +55,7 @@ public class RecyclerViewAdapterTab1 extends RecyclerView.Adapter<RecyclerViewAd
 
         final String tel = Numbers.get(position);
         // trying to open new page if you click a contact
-        holder.parentLayout.setOnClickListener(new View.OnClickListener() {
+        holder.name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "onClick: clicked on: " +  tel);

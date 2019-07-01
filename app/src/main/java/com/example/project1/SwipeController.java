@@ -1,6 +1,5 @@
 package com.example.project1;
 
-
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -8,24 +7,22 @@ import android.graphics.RectF;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.ItemTouchHelper.Callback;
 import androidx.recyclerview.widget.RecyclerView;
 
+import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE;
 enum ButtonsState {
     GONE,
     LEFT_VISIBLE,
     RIGHT_VISIBLE
 }
-public class SwipeController extends Callback {
+class SwipeController extends Callback {
     private boolean swipeBack = false;
-
     private ButtonsState buttonShowedState = ButtonsState.GONE;
-
     private RectF buttonInstance = null;
-
     private RecyclerView.ViewHolder currentItemViewHolder = null;
-
     private SwipeControllerActions buttonsActions = null;
-
     private static final float buttonWidth = 300;
 
     public SwipeController(SwipeControllerActions buttonsActions) {
@@ -34,7 +31,7 @@ public class SwipeController extends Callback {
 
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-        return makeMovementFlags(0, LEFT | RIGHT);
+        return makeMovementFlags(0, ItemTouchHelper.LEFT);
     }
 
     @Override
@@ -46,7 +43,6 @@ public class SwipeController extends Callback {
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
 
     }
-
     @Override
     public int convertToAbsoluteDirection(int flags, int layoutDirection) {
         if (swipeBack) {
@@ -150,10 +146,10 @@ public class SwipeController extends Callback {
         View itemView = viewHolder.itemView;
         Paint p = new Paint();
 
-        RectF leftButton = new RectF(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + buttonWidthWithoutPadding, itemView.getBottom());
-        p.setColor(Color.BLUE);
-        c.drawRoundRect(leftButton, corners, corners, p);
-        drawText("EDIT", c, leftButton, p);
+//        RectF leftButton = new RectF(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + buttonWidthWithoutPadding, itemView.getBottom());
+//        p.setColor(Color.BLUE);
+//        c.drawRoundRect(leftButton, corners, corners, p);
+//        drawText("EDIT", c, leftButton, p);
 
         RectF rightButton = new RectF(itemView.getRight() - buttonWidthWithoutPadding, itemView.getTop(), itemView.getRight(), itemView.getBottom());
         p.setColor(Color.RED);
@@ -161,10 +157,10 @@ public class SwipeController extends Callback {
         drawText("DELETE", c, rightButton, p);
 
         buttonInstance = null;
-        if (buttonShowedState == ButtonsState.LEFT_VISIBLE) {
-            buttonInstance = leftButton;
-        }
-        else if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) {
+//        if (buttonShowedState == ButtonsState.LEFT_VISIBLE) {
+//            buttonInstance = leftButton;
+//        }
+        if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) {
             buttonInstance = rightButton;
         }
     }

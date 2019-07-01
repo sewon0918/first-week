@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.provider.ContactsContract;
 import android.provider.MediaStore.Images;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -62,8 +63,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<Bitmap> Gallery = new ArrayList<>();
     private ArrayList<String> imageList = new ArrayList<>();
     private String imageEncoded;
-
-
+    private SwipeController swipeController = null;
+    private final int ADD_CONTACT = 3;
     //variables for Tab2
 
     private TableLayout tablayout;
@@ -85,11 +86,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<String> imagePathList= new ArrayList<>();
     private final int TAKE_PICTURE = 2;
     //private CountDownTimer countDownTimer;
-    private CountDownTimer  countDownTimer = new CountDownTimer(10000, 1000) {
+    private CountDownTimer  countDownTimer = new CountDownTimer(20000, 1000) {
         public void onTick(long millisUntilFinished) {
             timer.setText(String.format(Locale.getDefault(), "%d sec left.", millisUntilFinished / 1000L));
         }
-
         public void onFinish() {
             timer.setText("Done.");
             if (player1Turn){
@@ -101,106 +101,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-
-//    public class ContactItem implements Serializable {
-//        private String user_number, user_name;
-//        private long photo_id=0, person_id=0;
-//        private int id;
-//
-//        public ContactItem() {
-//        }
-//        public long getPhoto_id(){
-//            return photo_id;
-//        }
-//        public long getPerson_id(){
-//            return person_id;
-//        }
-//        public void setPhoto_id(long id){
-//            this.photo_id=id;
-//        }
-//        public void setPerson_id(long id){
-//            this.person_id=id;
-//        }
-//        public String getUser_number() {
-//            return user_number;
-//        }
-//
-//        public String getUser_name() {
-//            return user_name;
-//        }
-//
-//        public void setId(int id) {
-//            this.id = id;
-//        }
-//
-//        public int getId() {
-//            return id;
-//        }
-//
-//        public void setUser_number(String string) {
-//            this.user_number = string;
-//        }
-//
-//        public void setUser_name(String string) {
-//            this.user_name = string;
-//        }
-//
-//        @Override
-//        public String toString() {
-//            return this.user_number;
-//        }
-//
-//        @Override
-//        public int hashCode() {
-//            return getNumberChanged().hashCode();
-//        }
-//
-//        public String getNumberChanged() {
-//            return user_number.replace("-", "");
-//        }
-//
-//        @Override
-//        public boolean equals(Object o) {
-//            if (o instanceof ContactItem)
-//                return getNumberChanged().equals(((ContactItem) o).getNumberChanged());
-//            return false;
-//        }
-//    }
-    /*public ArrayList<ContactItem> getContactList(){
-        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
-        String[] projection = new String[]{
-                ContactsContract.CommonDataKinds.Phone.NUMBER,
-                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-                ContactsContract.Contacts.PHOTO_ID,
-                ContactsContract.Contacts._ID
-        };
-
-        String[] selectionArgs = null;
-        String sortOrder = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC";
-        Cursor cursor = getContentResolver().query(uri, projection, null, selectionArgs, sortOrder);
-        LinkedHashSet<ContactItem> hashlist = new LinkedHashSet<>();
-        if (cursor.moveToFirst()) {
-            do {
-                long photo_id = cursor.getLong(2);
-                long person_id = cursor.getLong(3);
-                ContactItem contactItem = new ContactItem();
-                contactItem.setUser_number(cursor.getString(0));
-                contactItem.setUser_name(cursor.getString(1));
-                contactItem.setPhoto_id(photo_id);
-                contactItem.setPerson_id(person_id);
-                hashlist.add(contactItem);
-            } while (cursor.moveToNext());
-        }
-
-        ArrayList<ContactItem> contactItems = new ArrayList<>(hashlist);
-
-
-        // this is just for setting id for each contact..
-        for (int i=0 ; i< contactItems.size(); i++){
-            contactItems.get(i).setId(i);
-        }
-        return contactItems;
-    }*/
 
     public JSONArray getContactList(){
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
@@ -324,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         final RecyclerViewAdapterTab1 adapterTab1 = new RecyclerViewAdapterTab1(Names, Numbers, Photos,this);
         recyclerViewtab1.setAdapter(adapterTab1);
         recyclerViewtab1.setLayoutManager(new LinearLayoutManager(this));
-        SwipeController swipeController = null;
+
 
         swipeController = new SwipeController(new SwipeControllerActions() {
             @Override
@@ -410,13 +310,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         JSONArray jArray = getContactList();
         initContactInfo(jArray);
+        Button addContact = (Button)findViewById(R.id.button_addContact);
+
+        addContact.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Intent intent = new Intent(MainActivity.this, AddContact.class);
+                startActivityForResult(intent, ADD_CONTACT);
+            }
+        });
 
         // 두 번째 Tab. (탭 표시 텍스트:"TAB 2"), (페이지 뷰:"content2")
         TabHost.TabSpec ts2 = tabHost1.newTabSpec("Tab Spec 2");
         ts2.setContent(R.id.content2);
         ts2.setIndicator("Gallery");
         tabHost1.addTab(ts2);
-
         Button gallery = (Button)findViewById(R.id.button_gallery);
         Button camera = (Button)findViewById(R.id.button_camera);
         //num = (TextView) findViewById(R.id.num);
@@ -510,11 +418,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         //num.setText(String.valueOf(Gallery.size()));
                     }else{
                         Toast.makeText(MainActivity.this, "사진 찍기를 취소하였습니다.", Toast.LENGTH_SHORT).show();
-
+                    }
+                    break;
+                case ADD_CONTACT:
+                    if (resultCode == RESULT_OK && data != null) {
+                        Intent contact = getIntent();
+                        String str_name = contact.getStringExtra("str_name");
+                        String str_number = contact.getStringExtra("str_number");
+                        String str_photo = contact.getStringExtra("str_photo");
+                        byte[] decodedByteArray = Base64.decode(str_photo, Base64.NO_WRAP);
+                        Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.length);
+                        Names.add(str_name);
+                        Numbers.add(str_number);
+                        Photos.add(decodedBitmap);
+                        initTab1RecyclerView(Names, Numbers, Photos);
+                    }else{
+                        Toast.makeText(MainActivity.this, "연락처 추가를 취소하였습니다.", Toast.LENGTH_SHORT).show();
                     }
                     break;
             }
-
         }catch(Exception e){
             Toast.makeText(this, "Oops! 로딩에 오류가 있습니다.", Toast.LENGTH_LONG).show();
             e.printStackTrace();
