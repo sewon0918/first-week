@@ -51,9 +51,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TAG = "MainActivity";
     String[] permission_list = {
             Manifest.permission.READ_CONTACTS,
-            Manifest.permission.CAMERA
-
-            //Manifest.permission.READ_EXTERNAL_STORAGE
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE
     };
 
     //variables for Tab1
@@ -66,10 +65,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private SwipeController swipeController = null;
     private final int ADD_CONTACT = 3;
     //variables for Tab2
-
     private TableLayout tablayout;
     private AppBarLayout appBarLayout;
-
+    //variables for Tab3
     private Button[][] buttons = new Button[10][10];
     private boolean player1Turn = true;
     private int roundCount;
@@ -81,9 +79,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView textViewTie;
     private TextView timer;
     private final int PICK_IMAGE_REQUEST = 1;
-    private TextView num;
-    private String imagePath;
-    private ArrayList<String> imagePathList= new ArrayList<>();
     private final int TAKE_PICTURE = 2;
     //private CountDownTimer countDownTimer;
     private CountDownTimer  countDownTimer = new CountDownTimer(20000, 1000) {
@@ -97,10 +92,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }else{
                 player1Win();
             }
-
         }
     };
-
 
     public JSONArray getContactList(){
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
@@ -110,13 +103,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ContactsContract.Contacts.PHOTO_ID,
                 ContactsContract.Contacts._ID
         };
-
         String[] selectionArgs = null;
         String sortOrder = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC";
         Cursor cursor = getContentResolver().query(uri, projection, null, selectionArgs, sortOrder);
-
         JSONArray jArray = new JSONArray();
-
         if (cursor.moveToFirst()){
             do {
                 try {
@@ -136,12 +126,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public Bitmap loadContactPhoto(ContentResolver cr, long id, long photo_id){
-//        Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, id);
-//        InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
-//        if (input != null)
-//            return resizingBitmap(BitmapFactory.decodeStream(input));
-//        else
-//            Log.d("PHOTO", "first try failed to load photo");
         byte[] photoBytes = null;
         Uri photoUri = ContentUris.withAppendedId(ContactsContract.Data.CONTENT_URI, photo_id);
         String sortOrder = ContactsContract.CommonDataKinds.Photo.PHOTO + " ASC";
@@ -184,19 +168,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return rBitmap;
     }
 
-    // adding images/photos and the names of corresponding contacts to each of their own lists
-
-//    private void initImageBitmaps(ArrayList<ContactItem> contactItems) {
-//        Log.d(TAG, "initImageBitmaps: preparing bitmaps");
-//        ContentResolver cr = getContentResolver();
-//        for (int j = 0; j < contactItems.size(); j++) {
-//            Names.add(contactItems.get(j).getUser_name());
-//            Numbers.add(contactItems.get(j).getUser_number());
-//            Photos.add(loadContactPhoto(cr, contactItems.get(j).getPerson_id(), contactItems.get(j).getPhoto_id()));
-//        }
-//        initTab1RecyclerView(Names, Numbers, Photos);
-//    }
-
     private void initContactInfo(JSONArray jArray) {
         Log.d(TAG, "initContactInfo: preparing contact info");
 
@@ -218,14 +189,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initTab1RecyclerView(ArrayList<String> Names, ArrayList<String> Numbers, ArrayList<Bitmap> Photos) {
-
         Log.d(TAG, "initTab1RecyclerView: init recyclerView.");
         final RecyclerView recyclerViewtab1 = findViewById(R.id.recycler_view_tab1);
         final RecyclerViewAdapterTab1 adapterTab1 = new RecyclerViewAdapterTab1(Names, Numbers, Photos,this);
         recyclerViewtab1.setAdapter(adapterTab1);
         recyclerViewtab1.setLayoutManager(new LinearLayoutManager(this));
-
-
         swipeController = new SwipeController(new SwipeControllerActions() {
             @Override
             public void onRightClicked(int position) {
@@ -237,32 +205,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 adapterTab1.notifyItemRangeChanged(position, adapterTab1.getItemCount());
             }
         });
-
         ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
         itemTouchhelper.attachToRecyclerView(recyclerViewtab1);
-
-//        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT ) {
-//            @Override
-//            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-//                //Toast.makeText("on Move").show();
-//                return true;
-//            }
-//            @Override
-//            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-//                // 삭제되는 아이템의 포지션을 가져온다
-//                final int position = viewHolder.getAdapterPosition();
-//
-//                // 아답타에게 알린다
-//                adapterTab1.Names.remove(position);
-//                adapterTab1.Numbers.remove(position);
-//                adapterTab1.Photos.remove(position);
-//                adapterTab1.notifyItemRemoved(position);
-//                adapterTab1.notifyItemRangeChanged(position, adapterTab1.getItemCount());
-//
-//            }
-//        };
-//        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
-//        itemTouchHelper.attachToRecyclerView(recyclerViewtab1);
         recyclerViewtab1.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
@@ -274,7 +218,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initGalleryInfo(ArrayList<Bitmap> Gallery) {
         Log.d(TAG, "initGalleryInfo: preparing gallery info");
         initTab2RecyclerView(Gallery);
-
     }
 
     private void initTab2RecyclerView(ArrayList<Bitmap> Gallery) {
@@ -283,18 +226,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         RecyclerViewAdapterTab2 adapterTab2 = new RecyclerViewAdapterTab2(this, Gallery);
         recyclerViewtab2.setAdapter(adapterTab2);
         recyclerViewtab2.setLayoutManager(new GridLayoutManager(this, 3));
-
-        /*recyclerViewtab2.setItemAnimator(new DefaultItemAnimator());
-        recyclerViewtab2.addOnItemTouchListener(new adapterTab2.RecyclerTouchListener(getApplicationContext(), recyclerViewtab2, new ));*/
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        //Log.d(TAG, "onCreate: started.");
         checkPermission();
     }
 
@@ -327,7 +264,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tabHost1.addTab(ts2);
         Button gallery = (Button)findViewById(R.id.button_gallery);
         Button camera = (Button)findViewById(R.id.button_camera);
-        //num = (TextView) findViewById(R.id.num);
         gallery.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View view){
                 Intent intent = new Intent();
@@ -375,6 +311,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
         tabHost1.setCurrentTab(0);
     }
+    public void checkPermission(){
+        //현재 안드로이드 버전이 6.0미만이면 메서드를 종료한다.
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+            return;
+        List<String> PermissionRqList = new ArrayList<>();
+        for(String permission : permission_list){
+            //권한 허용 여부를 확인한다.
+            int chk = checkCallingOrSelfPermission(permission);
+
+            if(chk == PackageManager.PERMISSION_DENIED){
+                //권한 허용을여부를 확인하는 창을 띄운다
+                PermissionRqList.add(permission);
+                //requestPermissions(permission_list,0);
+            }
+        }
+        if(!PermissionRqList.isEmpty()){
+            requestPermissions(PermissionRqList.toArray(new String[PermissionRqList.size()]),0);
+        }
+        else{
+            initial();
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode==0)
+        {
+            if(grantResults.length > 0) {
+                for (int i = 0; i < grantResults.length; i++) {
+                    //허용됐다면
+                    if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(getApplicationContext(), "앱권한설정하세요", Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "앱권한설정하세요", Toast.LENGTH_LONG).show();
+                finish();
+            }
+            initial();
+        }
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -382,13 +360,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try{
             switch(requestCode){
                 case PICK_IMAGE_REQUEST:
-                    imagePathList = new ArrayList<>();
                     if (resultCode == RESULT_OK && data != null) {
                         if(data.getClipData() != null){
                             int count = data.getClipData().getItemCount();
                             for (int i=0; i<count; i++){
-//                                Uri imageUri = data.getClipData().getItemAt(i).getUri();
-//                                getImageFilePath(imageUri);
                                 Uri uri = data.getClipData().getItemAt(i).getUri();
                                 Bitmap bm = Images.Media.getBitmap(getContentResolver(), uri);
                                 Gallery.add(bm);
@@ -439,50 +414,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
 
-    }
-
-
-    public void checkPermission(){
-        //현재 안드로이드 버전이 6.0미만이면 메서드를 종료한다.
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
-            return;
-        List<String> PermissionRqList = new ArrayList<>();
-        for(String permission : permission_list){
-            //권한 허용 여부를 확인한다.
-            int chk = checkCallingOrSelfPermission(permission);
-
-            if(chk == PackageManager.PERMISSION_DENIED){
-                //권한 허용을여부를 확인하는 창을 띄운다
-                PermissionRqList.add(permission);
-                //requestPermissions(permission_list,0);
-            }
-        }
-        if(!PermissionRqList.isEmpty()){
-            requestPermissions(PermissionRqList.toArray(new String[PermissionRqList.size()]),0);
-        }
-        else{
-            initial();
-        }
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode==0)
-        {
-            if(grantResults.length > 0) {
-                for (int i = 0; i < grantResults.length; i++) {
-                    //허용됐다면
-                    if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                        Toast.makeText(getApplicationContext(), "앱권한설정하세요", Toast.LENGTH_LONG).show();
-                        finish();
-                    }
-                }
-            } else {
-                Toast.makeText(getApplicationContext(), "앱권한설정하세요", Toast.LENGTH_LONG).show();
-                finish();
-            }
-            initial();
-        }
     }
 
     @Override
