@@ -101,7 +101,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-
     public JSONArray getContactList(){
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
         String[] projection = new String[]{
@@ -136,12 +135,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public Bitmap loadContactPhoto(ContentResolver cr, long id, long photo_id){
-//        Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, id);
-//        InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
-//        if (input != null)
-//            return resizingBitmap(BitmapFactory.decodeStream(input));
-//        else
-//            Log.d("PHOTO", "first try failed to load photo");
         byte[] photoBytes = null;
         Uri photoUri = ContentUris.withAppendedId(ContactsContract.Data.CONTENT_URI, photo_id);
         String sortOrder = ContactsContract.CommonDataKinds.Photo.PHOTO + " ASC";
@@ -184,19 +177,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return rBitmap;
     }
 
-    // adding images/photos and the names of corresponding contacts to each of their own lists
-
-//    private void initImageBitmaps(ArrayList<ContactItem> contactItems) {
-//        Log.d(TAG, "initImageBitmaps: preparing bitmaps");
-//        ContentResolver cr = getContentResolver();
-//        for (int j = 0; j < contactItems.size(); j++) {
-//            Names.add(contactItems.get(j).getUser_name());
-//            Numbers.add(contactItems.get(j).getUser_number());
-//            Photos.add(loadContactPhoto(cr, contactItems.get(j).getPerson_id(), contactItems.get(j).getPhoto_id()));
-//        }
-//        initTab1RecyclerView(Names, Numbers, Photos);
-//    }
-
     private void initContactInfo(JSONArray jArray) {
         Log.d(TAG, "initContactInfo: preparing contact info");
 
@@ -225,7 +205,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerViewtab1.setAdapter(adapterTab1);
         recyclerViewtab1.setLayoutManager(new LinearLayoutManager(this));
 
-
         swipeController = new SwipeController(new SwipeControllerActions() {
             @Override
             public void onRightClicked(int position) {
@@ -240,29 +219,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
         itemTouchhelper.attachToRecyclerView(recyclerViewtab1);
-
-//        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT ) {
-//            @Override
-//            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-//                //Toast.makeText("on Move").show();
-//                return true;
-//            }
-//            @Override
-//            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-//                // 삭제되는 아이템의 포지션을 가져온다
-//                final int position = viewHolder.getAdapterPosition();
-//
-//                // 아답타에게 알린다
-//                adapterTab1.Names.remove(position);
-//                adapterTab1.Numbers.remove(position);
-//                adapterTab1.Photos.remove(position);
-//                adapterTab1.notifyItemRemoved(position);
-//                adapterTab1.notifyItemRangeChanged(position, adapterTab1.getItemCount());
-//
-//            }
-//        };
-//        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
-//        itemTouchHelper.attachToRecyclerView(recyclerViewtab1);
         recyclerViewtab1.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
@@ -288,7 +244,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerViewtab2.addOnItemTouchListener(new adapterTab2.RecyclerTouchListener(getApplicationContext(), recyclerViewtab2, new ));*/
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -310,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         JSONArray jArray = getContactList();
         initContactInfo(jArray);
-        Button addContact = (Button)findViewById(R.id.button_addContact);
+        Button addContact = (Button) findViewById(R.id.button_addContact);
 
         addContact.setOnClickListener(new Button.OnClickListener(){
             @Override
@@ -702,6 +657,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tiePoints=savedInstanceState.getInt("tiePoints");
         player1Turn=savedInstanceState.getBoolean("player1Turn");
     }
-    //////////////////////////////////////
 }
 
