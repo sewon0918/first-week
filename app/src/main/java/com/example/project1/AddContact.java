@@ -1,10 +1,10 @@
 package com.example.project1;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
@@ -17,16 +17,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 public class AddContact extends AppCompatActivity implements View.OnClickListener {
-    public MainActivity MainActivity;
+    //public MainActivity MainActivity;
     final int ADD_CONTACT_PHOTO=4;
-    private Intent contact = new Intent(AddContact.this, MainActivity.class);
+    private Intent contact = new Intent();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_contact);
         Button addphoto = (Button) findViewById(R.id.addedphoto);
-        EditText addname = (EditText) findViewById(R.id.addedname);
-        EditText addnumber = (EditText) findViewById(R.id.addednumber);
+        final EditText addname = (EditText) findViewById(R.id.addedname);
+        final EditText addnumber = (EditText) findViewById(R.id.addednumber);
+
         Button contactsave = (Button) findViewById(R.id.contactsave);
 
         addphoto.setOnClickListener(new View.OnClickListener(){
@@ -40,19 +42,23 @@ public class AddContact extends AppCompatActivity implements View.OnClickListene
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), ADD_CONTACT_PHOTO);
             }
         });
-        String addedname = addname.getText().toString();
-        String addednumber = addnumber.getText().toString();
-        contact.putExtra("str_name", addedname);
-        contact.putExtra("str_number", addednumber);
+
         contactsave.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                setResult(Activity.RESULT_OK);
+                String addedname;
+                String addednumber;
+                addname.setInputType ( InputType. TYPE_TEXT_FLAG_NO_SUGGESTIONS );
+                addnumber.setInputType ( InputType. TYPE_TEXT_FLAG_NO_SUGGESTIONS );
+                addedname = addname.getText().toString();
+                addednumber = addnumber.getText().toString();
+                contact.putExtra("str_name", addedname);
+                contact.putExtra("str_number", addednumber);
+                setResult(RESULT_OK, contact);
                 finish();
             }
         });
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -69,6 +75,8 @@ public class AddContact extends AppCompatActivity implements View.OnClickListene
                             byte[] imageBytes = byteArrayOutputStream.toByteArray();
                             in.close();
                             contact.putExtra("str_photo", Base64.encodeToString(imageBytes, Base64.NO_WRAP));
+                            Button addphoto = (Button) findViewById(R.id.addedphoto);
+                            addphoto.setText("사진 선택 완료");
                         }
                     } else {
                         Toast.makeText(AddContact.this, "사진 선택을 취소하였습니다.", Toast.LENGTH_SHORT).show();

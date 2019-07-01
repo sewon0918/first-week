@@ -391,7 +391,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                                getImageFilePath(imageUri);
                                 Uri uri = data.getClipData().getItemAt(i).getUri();
                                 Bitmap bm = Images.Media.getBitmap(getContentResolver(), uri);
-
                                 Gallery.add(bm);
                             }
                         }
@@ -411,9 +410,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Bitmap bitmap = (Bitmap) data.getExtras().get("data");
                         if (bitmap != null) {
                             Gallery.add(bitmap);
-
                         }
-                        //num.setText(String.valueOf(Gallery.size()));
                         initGalleryInfo(Gallery);
                         //num.setText(String.valueOf(Gallery.size()));
                     }else{
@@ -421,11 +418,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     break;
                 case ADD_CONTACT:
-                    if (resultCode == RESULT_OK && data != null) {
+                    if (resultCode == RESULT_OK ) {
                         Intent contact = getIntent();
-                        String str_name = contact.getStringExtra("str_name");
-                        String str_number = contact.getStringExtra("str_number");
-                        String str_photo = contact.getStringExtra("str_photo");
+                        String str_name = data.getStringExtra("str_name");
+                        String str_number = data.getStringExtra("str_number");
+                        String str_photo = data.getStringExtra("str_photo");
                         byte[] decodedByteArray = Base64.decode(str_photo, Base64.NO_WRAP);
                         Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.length);
                         Names.add(str_name);
