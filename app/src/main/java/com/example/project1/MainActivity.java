@@ -8,10 +8,12 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.PersistableBundle;
 import android.provider.ContactsContract;
@@ -28,6 +30,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -40,6 +43,7 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -59,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<String> imageList = new ArrayList<>();
     private String imageEncoded;
 
+
     //variables for Tab2
 
     private TableLayout tablayout;
@@ -73,11 +78,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView textViewPlayer1;
     private TextView textViewPlayer2;
     private TextView textViewTie;
+    private TextView timer;
     private final int PICK_IMAGE_REQUEST = 1;
     private TextView num;
     private String imagePath;
     private ArrayList<String> imagePathList= new ArrayList<>();
     private final int TAKE_PICTURE = 2;
+    //private CountDownTimer countDownTimer;
+    private CountDownTimer  countDownTimer = new CountDownTimer(10000, 1000) {
+        public void onTick(long millisUntilFinished) {
+            timer.setText(String.format(Locale.getDefault(), "%d sec left.", millisUntilFinished / 1000L));
+        }
+
+        public void onFinish() {
+            timer.setText("Done.");
+            if (player1Turn){
+                player2Win();
+            }else{
+                player1Win();
+            }
+
+        }
+    };
+
 
 //    public class ContactItem implements Serializable {
 //        private String user_number, user_name;
@@ -295,29 +318,62 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initTab1RecyclerView(ArrayList<String> Names, ArrayList<String> Numbers, ArrayList<Bitmap> Photos) {
+
         Log.d(TAG, "initTab1RecyclerView: init recyclerView.");
-        RecyclerView recyclerViewtab1 = findViewById(R.id.recycler_view_tab1);
-        RecyclerViewAdapterTab1 adapterTab1 = new RecyclerViewAdapterTab1(Names, Numbers, Photos,this);
+        final RecyclerView recyclerViewtab1 = findViewById(R.id.recycler_view_tab1);
+        final RecyclerViewAdapterTab1 adapterTab1 = new RecyclerViewAdapterTab1(Names, Numbers, Photos,this);
         recyclerViewtab1.setAdapter(adapterTab1);
         recyclerViewtab1.setLayoutManager(new LinearLayoutManager(this));
+        SwipeController swipeController = null;
+
+        swipeController = new SwipeController(new SwipeControllerActions() {
+            @Override
+            public void onRightClicked(int position) {
+                // 아답타에게 알린다
+                adapterTab1.Names.remove(position);
+                adapterTab1.Numbers.remove(position);
+                adapterTab1.Photos.remove(position);
+                adapterTab1.notifyItemRemoved(position);
+                adapterTab1.notifyItemRangeChanged(position, adapterTab1.getItemCount());
+            }
+        });
+
+        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
+        itemTouchhelper.attachToRecyclerView(recyclerViewtab1);
+
+//        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT ) {
+//            @Override
+//            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+//                //Toast.makeText("on Move").show();
+//                return true;
+//            }
+//            @Override
+//            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+//                // 삭제되는 아이템의 포지션을 가져온다
+//                final int position = viewHolder.getAdapterPosition();
+//
+//                // 아답타에게 알린다
+//                adapterTab1.Names.remove(position);
+//                adapterTab1.Numbers.remove(position);
+//                adapterTab1.Photos.remove(position);
+//                adapterTab1.notifyItemRemoved(position);
+//                adapterTab1.notifyItemRangeChanged(position, adapterTab1.getItemCount());
+//
+//            }
+//        };
+//        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+//        itemTouchHelper.attachToRecyclerView(recyclerViewtab1);
+        recyclerViewtab1.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+                swipeController.onDraw(c);
+            }
+        });
     }
 
     private void initGalleryInfo(ArrayList<Bitmap> Gallery) {
         Log.d(TAG, "initGalleryInfo: preparing gallery info");
         initTab2RecyclerView(Gallery);
-//        tab2_gallery_photos.add(new Gallery_Photo("blues_shop_silk", R.drawable.blue_shop_silk_flower));
-//        tab2_gallery_photos.add(new Gallery_Photo("german_shepherd", R.drawable.german_shepherd));
-//        tab2_gallery_photos.add(new Gallery_Photo("sycamore_yes", R.drawable.sycamore_yes));
-//        tab2_gallery_photos.add(new Gallery_Photo("blue_eye_doggy", R.drawable.blue_eye_doggy));
-//        tab2_gallery_photos.add(new Gallery_Photo("blue_butterfly", R.drawable.bluebutterfly));
-//        tab2_gallery_photos.add(new Gallery_Photo("chihuahua", R.drawable.chihuahua));
-//        tab2_gallery_photos.add(new Gallery_Photo("daylily_flower_and_buds_sharp", R.drawable.daylily_flower));
-//        tab2_gallery_photos.add(new Gallery_Photo("flowervase", R.drawable.flowervase));
-//        tab2_gallery_photos.add(new Gallery_Photo("puppy_development", R.drawable.puppy_development));
-//        tab2_gallery_photos.add(new Gallery_Photo("rosebear", R.drawable.rosebear));
-//        tab2_gallery_photos.add(new Gallery_Photo("treefaces", R.drawable.treefaces));
-
-//        initTab2RecyclerView(tab2_gallery_photos);
 
     }
 
@@ -337,6 +393,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         //Log.d(TAG, "onCreate: started.");
         checkPermission();
     }
@@ -391,6 +448,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         textViewPlayer1 = findViewById(R.id.text_view_p1);
         textViewPlayer2 = findViewById(R.id.text_view_p2);
         textViewTie = findViewById(R.id.text_view_tie);
+        timer = findViewById(R.id.text_view_timer);
 
         for (int i=0; i<10; i++){
             for (int j=0; j<10; j++){
@@ -407,7 +465,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 resetGame();
             }
         });
-
         tabHost1.setCurrentTab(0);
     }
     @Override
@@ -511,6 +568,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v){
+        countDownTimer.start();
         if (!((Button) v).getText().toString().equals("")){
             return;
         }
@@ -538,8 +596,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 textViewPlayer1.setTextColor(Color.BLACK);
                 textViewPlayer2.setTextColor(Color.RED);
             }
-
         }
+
     }
     private Boolean checkForWin(){
         String[][] field = new String[10][10];
@@ -579,11 +637,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return false;
     }
     private void player1Wins(){
+        countDownTimer.cancel();
         player1Points++;
         Toast toast = Toast.makeText(this, "Player 1 wins!", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL,0,0);
         toast.show();
         updatePointsText();
+        timer.setText("timer: ");
         for (int i=0; i<10; i++){
             for (int j=0; j<10; j++){
                 buttons[i][j].setEnabled(false);
@@ -599,14 +659,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
             }},2000);
-
     }
     private void player2Wins(){
+        countDownTimer.cancel();
         player2Points++;
         Toast toast2 = Toast.makeText(this, "Player 2 wins!", Toast.LENGTH_SHORT);
         toast2.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL,0,0);
         toast2.show();
         updatePointsText();
+        timer.setText("timer: ");
         for (int i=0; i<10; i++){
             for (int j=0; j<10; j++){
                 buttons[i][j].setEnabled(false);
@@ -622,7 +683,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
             }},2000);
-
+    }
+    private void player1Win(){
+        countDownTimer.cancel();
+        player1Points++;
+        Toast toast = Toast.makeText(this, "Time is up! Player 1 wins", Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL,0,0);
+        toast.show();
+        updatePointsText();
+        timer.setText("timer: ");
+        for (int i=0; i<10; i++){
+            for (int j=0; j<10; j++){
+                buttons[i][j].setEnabled(false);
+            }
+        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                resetBoard();
+                for (int i=0; i<10; i++){
+                    for (int j=0; j<10; j++){
+                        buttons[i][j].setEnabled(true);
+                    }
+                }
+            }},2000);
+    }
+    private void player2Win(){
+        countDownTimer.cancel();
+        player2Points++;
+        Toast toast2 = Toast.makeText(this, "Time is up! Player 2 wins", Toast.LENGTH_SHORT);
+        toast2.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL,0,0);
+        toast2.show();
+        updatePointsText();
+        timer.setText("timer: ");
+        for (int i=0; i<10; i++){
+            for (int j=0; j<10; j++){
+                buttons[i][j].setEnabled(false);
+            }
+        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                resetBoard();
+                for (int i=0; i<10; i++){
+                    for (int j=0; j<10; j++){
+                        buttons[i][j].setEnabled(true);
+                    }
+                }
+            }},2000);
     }
     private void draw(){
         tiePoints++;
@@ -647,9 +755,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         textViewPlayer2.setTextColor(Color.BLACK);
     }
     private void resetGame(){
+        countDownTimer.cancel();
         player1Points = 0;
         player2Points = 0;
         tiePoints = 0;
+        timer.setText("timer: ");
         updatePointsText();
         resetBoard();
     }

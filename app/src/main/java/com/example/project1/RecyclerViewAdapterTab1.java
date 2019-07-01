@@ -23,10 +23,10 @@ public class RecyclerViewAdapterTab1 extends RecyclerView.Adapter<RecyclerViewAd
     private static final String TAG = "RecyclerViewAdapterTab1";
    // private String tel;
 
-    private ArrayList<String> Names = new ArrayList<>();
-    private ArrayList<String> Numbers = new ArrayList<>();
-    private ArrayList<Bitmap> Photos = new ArrayList<>();
-    private Context mContext;
+    public ArrayList<String> Names = new ArrayList<>();
+    public ArrayList<String> Numbers = new ArrayList<>();
+    public ArrayList<Bitmap> Photos = new ArrayList<>();
+    public Context mContext;
 
     public RecyclerViewAdapterTab1(ArrayList<String> Names, ArrayList<String> Numbers, ArrayList<Bitmap> Photos, Context mContext) {
         this.Names = Names;
