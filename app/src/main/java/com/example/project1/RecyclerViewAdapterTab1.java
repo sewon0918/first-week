@@ -1,15 +1,17 @@
 package com.example.project1;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.content.Intent;
-import android.net.Uri;
-import android.graphics.Bitmap;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,13 +27,13 @@ public class RecyclerViewAdapterTab1 extends RecyclerView.Adapter<RecyclerViewAd
 
     public ArrayList<String> Names = new ArrayList<>();
     public ArrayList<String> Numbers = new ArrayList<>();
-    public ArrayList<Bitmap> Photos = new ArrayList<>();
+    public ArrayList<String> PhotosStr = new ArrayList<>();
     public Context mContext;
 
-    public RecyclerViewAdapterTab1(ArrayList<String> Names, ArrayList<String> Numbers, ArrayList<Bitmap> Photos, Context mContext) {
+    public RecyclerViewAdapterTab1(ArrayList<String> Names, ArrayList<String> Numbers, ArrayList<String> PhotosStr, Context mContext) {
         this.Names = Names;
         this.Numbers = Numbers;
-        this.Photos = Photos;
+        this.PhotosStr = PhotosStr;
         this.mContext = mContext;
     }
 
@@ -51,7 +53,14 @@ public class RecyclerViewAdapterTab1 extends RecyclerView.Adapter<RecyclerViewAd
 
         holder.name.setText(Names.get(position));
         holder.number.setText(Numbers.get(position));
-        holder.photo.setImageBitmap(Photos.get(position));
+        if (PhotosStr.get(position)!=null){
+            byte[] decodedByteArray = Base64.decode(PhotosStr.get(position), Base64.NO_WRAP);
+            Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.length);
+            holder.photo.setImageBitmap(decodedBitmap);
+        }else{
+
+        }
+
 
         final String tel = Numbers.get(position);
         // trying to open new page if you click a contact

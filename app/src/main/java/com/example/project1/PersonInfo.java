@@ -3,6 +3,7 @@ package com.example.project1;
 public class PersonInfo {
     public String name;
     public String num;
+    public String photo;
 
 
     public String getName() {
@@ -19,5 +20,8 @@ public class PersonInfo {
 
     public void setNum(String num) {
         this.num = num;
+    }
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 }

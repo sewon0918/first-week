@@ -41,6 +41,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<String> Names = new ArrayList<>();
     private ArrayList<String> Numbers = new ArrayList<>();
     private ArrayList<Bitmap> Photos = new ArrayList<>();
+    private ArrayList<String> PhotosStr = new ArrayList<>();
     private ArrayList<Bitmap> Gallery = new ArrayList<>();
     private ArrayList<String> imageList = new ArrayList<>();
     private String imageEncoded;
@@ -180,18 +182,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Photos.add(loadContactPhoto(cr,
                         jArray.getJSONObject(j).getLong("person_id"),
                         jArray.getJSONObject(j).getLong("photo_id")));
+
             }
             catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        initTab1RecyclerView(Names, Numbers, Photos);
+        for (int i=0; i<Photos.size(); i++){
+            if (Photos.get(i)!=null){
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                Bitmap bitmap = Photos.get(i);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                byte[] bytes = stream.toByteArray();
+                PhotosStr.add(Base64.encodeToString(bytes, Base64.NO_WRAP));
+            }else{
+                PhotosStr.add(null);
+            }
+
+        }
+        initTab1RecyclerView(Names, Numbers, PhotosStr);
     }
 
-    private void initTab1RecyclerView(ArrayList<String> Names, ArrayList<String> Numbers, ArrayList<Bitmap> Photos) {
+    private void initTab1RecyclerView(ArrayList<String> Names, ArrayList<String> Numbers, ArrayList<String> PhotosStr) {
         Log.d(TAG, "initTab1RecyclerView: init recyclerView.");
         final RecyclerView recyclerViewtab1 = findViewById(R.id.recycler_view_tab1);
-        final RecyclerViewAdapterTab1 adapterTab1 = new RecyclerViewAdapterTab1(Names, Numbers, Photos,this);
+        final RecyclerViewAdapterTab1 adapterTab1 = new RecyclerViewAdapterTab1(Names, Numbers, PhotosStr,this);
         recyclerViewtab1.setAdapter(adapterTab1);
         recyclerViewtab1.setLayoutManager(new LinearLayoutManager(this));
         swipeController = new SwipeController(new SwipeControllerActions() {
@@ -200,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // 아답타에게 알린다
                 adapterTab1.Names.remove(position);
                 adapterTab1.Numbers.remove(position);
-                adapterTab1.Photos.remove(position);
+                adapterTab1.PhotosStr.remove(position);
                 adapterTab1.notifyItemRemoved(position);
                 adapterTab1.notifyItemRangeChanged(position, adapterTab1.getItemCount());
             }
@@ -403,7 +418,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Names.add(str_name);
                         Numbers.add(str_number);
                         Photos.add(decodedBitmap);
-                        initTab1RecyclerView(Names, Numbers, Photos);
+                        PhotosStr.add(str_photo);
+                        initTab1RecyclerView(Names, Numbers, PhotosStr);
                     }else{
                         Toast.makeText(MainActivity.this, "연락처 추가를 취소하였습니다.", Toast.LENGTH_SHORT).show();
                     }
