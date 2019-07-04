@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,12 +19,21 @@ import java.io.InputStream;
 
 public class AddContact extends AppCompatActivity implements View.OnClickListener {
     //public MainActivity MainActivity;
-    final int ADD_CONTACT_PHOTO=4;
+    final int ADD_CONTACT_PHOTO = 4;
     private Intent contact = new Intent();
+
+    RetroClient retroClient;
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        retroClient = RetroClient.getInstance(this).createBaseApi();
+
+
         setContentView(R.layout.add_contact);
         Button addphoto = (Button) findViewById(R.id.addedphoto);
         final EditText addname = (EditText) findViewById(R.id.addedname);
@@ -31,9 +41,9 @@ public class AddContact extends AppCompatActivity implements View.OnClickListene
 
         Button contactsave = (Button) findViewById(R.id.contactsave);
 
-        addphoto.setOnClickListener(new View.OnClickListener(){
+        addphoto.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 Intent intent = new Intent();
                 // Show only images, no videos or anything else
                 intent.setType("image/*");
@@ -43,18 +53,40 @@ public class AddContact extends AppCompatActivity implements View.OnClickListene
             }
         });
 
-        contactsave.setOnClickListener(new View.OnClickListener(){
+        contactsave.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 String addedname;
                 String addednumber;
-                addname.setInputType ( InputType. TYPE_TEXT_FLAG_NO_SUGGESTIONS );
-                addnumber.setInputType ( InputType. TYPE_TEXT_FLAG_NO_SUGGESTIONS );
+                addname.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+                addnumber.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
                 addedname = addname.getText().toString();
                 addednumber = addnumber.getText().toString();
                 contact.putExtra("str_name", addedname);
                 contact.putExtra("str_number", addednumber);
                 setResult(RESULT_OK, contact);
+
+                PersonInfo personinfo = new PersonInfo();
+                personinfo.setName(addedname);
+                personinfo.setNum(addednumber);
+                retroClient.addContact(personinfo, new RetroCallback() {
+                    @Override
+                    public void onError(Throwable t) {
+                        Log.e("error", "aaaaaaaaaa");
+                    }
+
+                    @Override
+                    public void onSuccess(int code, Object receivedData) {
+                        PersonInfo data = (PersonInfo) receivedData;
+                        Log.d("aa", String.format("%s", data.getName()));
+                        finish();
+                    }
+
+                    @Override
+                    public void onFailure(int code) {
+                        Log.e("error", "ddddd");
+                    }
+                });
                 finish();
             }
         });
@@ -90,7 +122,8 @@ public class AddContact extends AppCompatActivity implements View.OnClickListene
     }
 
     @Override
-    public void onClick(View v){
+    public void onClick(View v) {
 
     }
 }
+
