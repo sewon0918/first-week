@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+    <TextView
+        android:id="@+id/addcontact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20sp"
+        android:layout_marginLeft="20sp"
+        android:layout_marginBottom="20sp"
+        android:textColor="#000"
+        android:textStyle="bold"
+        android:textSize="40sp"
+        android:freezesText="true"
+        android:text="[연락처 추가]" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/addphoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20sp"
+            android:layout_weight="1"
+            android:textColor="#000"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:freezesText="true"
+            android:text="1. 사진을 선택하세요." />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20sp"
+            android:layout_marginBottom="20sp"
+            android:layout_below="@id/addphoto"
+            android:id="@+id/addedphoto"
+            android:text="사진선택"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/addname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20sp"
+            android:layout_weight="1"
+            android:textColor="#000"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:freezesText="true"
+            android:text="2. 이름을 입력하세요." />
+        <EditText
+            android:id="@+id/addedname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20sp"
+            android:layout_marginBottom="20sp"
+            android:layout_below="@id/addname"
+            android:hint="이름을 입력하세요"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/addnumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20sp"
+            android:layout_weight="1"
+            android:textColor="#000"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:freezesText="true"
+            android:text="3. 번호를 입력하세요." />
+        <EditText
+            android:id="@+id/addednumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20sp"
+            android:layout_marginBottom="20sp"
+            android:layout_below="@id/addnumber"
+            android:hint="번호을 입력하세요" />
+    </LinearLayout>
+    <Button
+        android:id="@+id/contactsave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20sp"
+        android:text="저장"/>
+
+</LinearLayout>
