@@ -28,4 +28,5 @@ public interface RetroBaseApiService {
 
     @DELETE("/posts/1")
     Call<ResponseBody> deleteFirst();
+}
 
