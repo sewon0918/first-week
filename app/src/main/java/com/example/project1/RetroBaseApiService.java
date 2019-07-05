@@ -31,4 +31,3 @@ public interface RetroBaseApiService {
     Call<ResponseBody> deleteFirst();
 
 }
-
