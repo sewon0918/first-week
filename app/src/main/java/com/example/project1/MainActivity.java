@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -52,11 +53,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -71,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<String> Names = new ArrayList<>();
     private ArrayList<String> Numbers = new ArrayList<>();
     private ArrayList<Bitmap> Photos = new ArrayList<>();
+    private ArrayList<String> PhotosStr = new ArrayList<>();
+    private ArrayList<PersonInfo> PersonInfo = new ArrayList<>();
     private ArrayList<Bitmap> Gallery = new ArrayList<>();
     private ArrayList<String> imageList = new ArrayList<>();
     private String imageEncoded;
@@ -108,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     };
+    //RetroClient retroClient= RetroClient.getInstance(this).createBaseApi();
 
 
     //FACEBOOK====================================================
@@ -160,8 +166,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (photoBytes != null)
             return resizingBitmap(BitmapFactory.decodeByteArray(photoBytes, 0, photoBytes.length));
-        else
-            Log.d("PHOTO", "second try failed to load photo");
+//        else
+//            Log.d("PHOTO", "second try failed to load photo");
         return null;
     }
 
@@ -200,18 +206,86 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Photos.add(loadContactPhoto(cr,
                         jArray.getJSONObject(j).getLong("person_id"),
                         jArray.getJSONObject(j).getLong("photo_id")));
+
             }
             catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        initTab1RecyclerView(Names, Numbers, Photos);
+        for (int i=0; i<Photos.size(); i++){
+            if (Photos.get(i)!=null){
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                Bitmap bitmap = Photos.get(i);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                byte[] bytes = stream.toByteArray();
+                PhotosStr.add(Base64.encodeToString(bytes, Base64.NO_WRAP));
+            }else{
+                PhotosStr.add(null);
+            }
+        }
+        for (int i=0; i<Names.size(); i++){
+            PersonInfo personinfo = new PersonInfo();
+            String namestr = Names.get(i);
+            String numstr = Numbers.get(i);
+            String photostr = PhotosStr.get(i);
+            personinfo.setName(namestr);
+            personinfo.setNum(numstr);
+            personinfo.setId("1");
+            if (photostr != null){
+                personinfo.setPhoto(photostr);
+            }
+            RetroClient retroClient = RetroClient.getInstance(this).createBaseApi();
+            retroClient.addContact(personinfo, new RetroCallback() {
+                @Override
+                public void onError(Throwable t) {
+                    Log.e("error", "aaaaaaaaaa");
+                }
+                @Override
+                public void onSuccess(int code, Object receivedData) {
+//                    PersonInfo data = (PersonInfo) receivedData;
+//                    String str = data.getName();
+//                    //Log.d("aa", String.format("%s", data.getName()));
+//                    Log.d("aa",  str);
+//                    finish();
+                    initTab1RecyclerView(Names, Numbers, PhotosStr);
+                }
+                @Override
+                public void onFailure(int code) {
+                    Log.e("error", "ddddd");
+                }
+            });
+        }
+//        initTab1RecyclerView(Names, Numbers, PhotosStr);
+    }
+    private void initContactInfoById(String Id) {
+        RetroClient retroClient = RetroClient.getInstance(this).createBaseApi();
+        retroClient.getAllContact(Id, new RetroCallback() {
+            @Override
+            public void onError(Throwable t) {
+                Log.e("error", "aaaaaaaaaa");
+            }
+            @Override
+            public void onSuccess(int code, Object receivedData) {
+                List<PersonInfo> data = (List<PersonInfo>) receivedData;
+                for (int i=0; i<data.size(); i++){
+                    Names.add(data.get(i).getName());
+                    Numbers.add(data.get(i).getNum());
+                    PhotosStr.add(data.get(i).getPhoto());
+                }
+                initTab1RecyclerView(Names, Numbers, PhotosStr);
+            }
+            @Override
+            public void onFailure(int code) {
+                Log.e("error", "ddddd");
+            }
+        });
+//        initTab1RecyclerView(Names, Numbers, PhotosStr);
     }
 
-    private void initTab1RecyclerView(ArrayList<String> Names, ArrayList<String> Numbers, ArrayList<Bitmap> Photos) {
+    private void initTab1RecyclerView(ArrayList<String> Names, ArrayList<String> Numbers, ArrayList<String> PhotosStr) {
         Log.d(TAG, "initTab1RecyclerView: init recyclerView.");
         final RecyclerView recyclerViewtab1 = findViewById(R.id.recycler_view_tab1);
-        final RecyclerViewAdapterTab1 adapterTab1 = new RecyclerViewAdapterTab1(Names, Numbers, Photos,this);
+        final RecyclerViewAdapterTab1 adapterTab1 = new RecyclerViewAdapterTab1(Names, Numbers, PhotosStr,this);
         recyclerViewtab1.setAdapter(adapterTab1);
         recyclerViewtab1.setLayoutManager(new LinearLayoutManager(this));
         swipeController = new SwipeController(new SwipeControllerActions() {
@@ -220,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // 아답타에게 알린다
                 adapterTab1.Names.remove(position);
                 adapterTab1.Numbers.remove(position);
-                adapterTab1.Photos.remove(position);
+                adapterTab1.PhotosStr.remove(position);
                 adapterTab1.notifyItemRemoved(position);
                 adapterTab1.notifyItemRangeChanged(position, adapterTab1.getItemCount());
             }
@@ -249,7 +323,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         checkPermission();
@@ -418,6 +492,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void initial(){
+
         TabHost tabHost1 = (TabHost) findViewById(R.id.tabHost1);
         tabHost1.setup();
 
@@ -427,10 +502,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ts1.setIndicator("Contacts");
         tabHost1.addTab(ts1);
 
-        JSONArray jArray = getContactList();
-        initContactInfo(jArray);
-        Button addContact = (Button)findViewById(R.id.button_addContact);
+        initContactInfoById("1");
 
+        Button setContact = (Button)findViewById(R.id.button_setContact);
+        setContact.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                JSONArray jArray = getContactList();
+                initContactInfo(jArray);
+            }
+        });
+//        JSONArray jArray = getContactList();
+//        initContactInfo(jArray);
+
+        Button addContact = (Button)findViewById(R.id.button_addContact);
         addContact.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -596,7 +681,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Names.add(str_name);
                         Numbers.add(str_number);
                         Photos.add(decodedBitmap);
-                        initTab1RecyclerView(Names, Numbers, Photos);
+                        PhotosStr.add(str_photo);
+                        initTab1RecyclerView(Names, Numbers, PhotosStr);
                     }else{
                         Toast.makeText(MainActivity.this, "연락처 추가를 취소하였습니다.", Toast.LENGTH_SHORT).show();
                     }

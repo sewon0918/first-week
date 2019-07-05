@@ -1,5 +1,7 @@
 package com.example.project1;
 
+import java.util.List;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -12,13 +14,10 @@ import retrofit2.http.Path;
 public interface RetroBaseApiService {
     final String Base_URL = "http://143.248.36.26:8000";
 
-    // GET ALL CONTACTS
-//    @GET("/{user_id}")    Call<List<PersonInfo>> getName;
-//    @Query("Id") String id);
+    //GET ALL CONTACTS
+    @GET("/api/contacts/{id}")
+    Call<List<PersonInfo>> getAllContact(@Path("id") String id);
 
-    // GET SINGLE CONTACT
-    @GET("/api/contacts/{Id}")
-    Call<PersonInfo> getName(@Path("Id") String id);
 
     // ADD SINGLE CONTACT
     @POST("/api/contacts")
@@ -30,4 +29,3 @@ public interface RetroBaseApiService {
     @DELETE("/posts/1")
     Call<ResponseBody> deleteFirst();
 
-}

@@ -56,6 +56,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Add contact"/>
+                    <Button
+                        android:id="@+id/button_setContact"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="동기화"/>
 
 
 
@@ -135,7 +140,8 @@
                             android:textColor="#ffff0000"
                             android:textStyle="bold"
                             android:textSize="20sp"
-                            android:freezesText="true"/>
+                            android:freezesText="true"
+                            android:layout_marginLeft="20dp" />
                         <TextView
                             android:id="@+id/text_view_p2"
                             android:layout_width="wrap_content"
@@ -145,7 +151,8 @@
                             android:textColor="#000"
                             android:textStyle="bold"
                             android:textSize="20sp"
-                            android:freezesText="true"/>
+                            android:freezesText="true"
+                            android:layout_marginLeft="30dp" />
                         <TextView
                             android:id="@+id/text_view_tie"
                             android:layout_width="wrap_content"
@@ -155,7 +162,8 @@
                             android:textColor="#000"
                             android:textStyle="bold"
                             android:textSize="20sp"
-                            android:freezesText="true"/>
+                            android:freezesText="true"
+                            android:layout_marginLeft="30dp" />
 
                     </LinearLayout>
 
@@ -172,7 +180,10 @@
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
                             android:layout_marginEnd="30dp"
-                            android:text="reset"/>
+                            android:text="reset"
+                            android:layout_marginLeft="20dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginRight="30dp" />
                         <TextView
                             android:id="@+id/text_view_timer"
                             android:layout_width="wrap_content"

@@ -2,7 +2,6 @@ package com.example.project1;
 
 import android.content.Context;
 
-import java.security.SecureRandomSpi;
 import java.util.HashMap;
 import java.util.List;
 
@@ -58,19 +57,18 @@ public class RetroClient {
         return retrofit.create(service);
     }
 
-    public void getALL(String id, final RetroCallback callback) {
-        apiService.getName(id).enqueue(new Callback<PersonInfo>() {
+    public void getAllContact(String id, final RetroCallback callback) {
+        apiService.getAllContact(id).enqueue(new Callback<List<PersonInfo>>(){
             @Override
-            public void onResponse(Call<PersonInfo> call, Response<PersonInfo> response) {
+            public void onResponse(Call<List<PersonInfo>> call, Response<List<PersonInfo>> response) {
                 if(response.isSuccessful()){
                     callback.onSuccess(response.code(), response.body());
                 } else {
                     callback.onFailure(response.code());
                 }
             }
-
             @Override
-            public void onFailure(Call<PersonInfo> call, Throwable t) {
+            public void onFailure(Call<List<PersonInfo>> call, Throwable t) {
                 callback.onError(t);
             }
         });
@@ -86,15 +84,12 @@ public class RetroClient {
                     callback.onFailure(response.code());
                 }
             }
-
             @Override
             public void onFailure(Call<PersonInfo> call, Throwable t) {
                 callback.onError(t);
             }
         }));
     }
-
-
 
 
     public void putFirst(HashMap<String, Object> parameters, final RetroCallback callback) {
@@ -107,7 +102,6 @@ public class RetroClient {
                     callback.onFailure(response.code());
                 }
             }
-
             @Override
             public void onFailure(Call<ResponseGet> call, Throwable t) {
                 callback.onError(t);
@@ -127,7 +121,6 @@ public class RetroClient {
                     callback.onFailure(response.code());
                 }
             }
-
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 callback.onError(t);
