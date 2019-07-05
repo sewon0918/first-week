@@ -36,6 +36,17 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.material.appbar.AppBarLayout;
 
 import org.json.JSONArray;
@@ -45,6 +56,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -69,9 +81,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String imageEncoded;
     private SwipeController swipeController = null;
     private final int ADD_CONTACT = 3;
+
     //variables for Tab2
     private TableLayout tablayout;
     private AppBarLayout appBarLayout;
+
     //variables for Tab3
     private Button[][] buttons = new Button[10][10];
     private boolean player1Turn = true;
@@ -100,6 +114,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
     //RetroClient retroClient= RetroClient.getInstance(this).createBaseApi();
+
+
+    //FACEBOOK====================================================
+    public static CallbackManager callbackManager;
+    private AccessTokenTracker accessTokenTracker;
+    private int created;
 
     public JSONArray getContactList(){
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
@@ -307,6 +327,168 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         checkPermission();
+
+        //FACEBOOK====================================
+        callbackManager = CallbackManager.Factory.create();
+
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
+
+
+        if(isLoggedIn) {
+            Log.d(TAG, "true");
+        }
+        else {
+            Log.d(TAG, "false");
+        }
+
+        if(isLoggedIn)
+        {
+            initial();
+        }
+        else {
+            final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+            loginButton.bringToFront();
+            loginButton.setReadPermissions(Arrays.asList(
+                    "public_profile", "email"));
+
+            // Defining the AccessTokenTracker
+            accessTokenTracker = new AccessTokenTracker() {
+                // This method is invoked everytime access token changes
+                @Override
+                protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+
+                    if(currentAccessToken!= null) {
+                        Log.d(TAG, "onCurrentAccessTokenChanged");
+                        useLoginInformation(currentAccessToken);
+                    }
+
+                }
+            };
+
+
+            LoginManager.getInstance().registerCallback(callbackManager,
+                    new FacebookCallback<LoginResult>() {
+                        @Override
+                        public void onSuccess(LoginResult loginResult) {
+                            // App code,,
+                            Log.d(TAG, "facebook:onSuccess1");
+
+                            AccessToken accessToken = loginResult.getAccessToken();
+                            if (accessToken != null) {
+                                useLoginInformation(accessToken);
+                            }
+                            if(created == 0) {
+                                initial();
+                                created ++;
+                            }
+                        }
+
+                        @Override
+                        public void onCancel() {
+                            // App code
+                            Log.d(TAG, "facebook:onCancel1");
+                        }
+
+                        @Override
+                        public void onError(FacebookException exception) {
+                            // App code
+                        }
+                    });
+
+            // Callback registration
+            loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                @Override
+                public void onSuccess(LoginResult loginResult) {
+                    Log.d(TAG, "facebook:onSuccess2");
+                    AccessToken accessToken = loginResult.getAccessToken();
+                    if(created == 0) {
+                        initial();
+                        created ++;
+                    }
+                }
+
+                @Override
+                public void onCancel() {
+                    // App code
+                    Log.d(TAG, "facebook:onCancel2");
+                }
+
+                @Override
+                public void onError(FacebookException exception) {
+                    // App code
+                }
+            });
+        }
+    }
+
+    public void onStart() {
+        Log.d(TAG, "onStart");
+        super.onStart();
+
+//        accessTokenTracker.startTracking();
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        if (accessToken != null) {
+            useLoginInformation(accessToken);
+        }
+    }
+
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume");
+    }
+
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause");
+    }
+
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop");
+    }
+
+    public void onRestart() {
+        super.onRestart();
+        Log.d(TAG, "onRestart");
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy");
+//        accessTokenTracker.stopTracking();
+
+    }
+
+    private void useLoginInformation(AccessToken accessToken) {
+        /**
+         Creating the GraphRequest to fetch user details
+         1st Param - AccessToken
+         2nd Param - Callback (which will be invoked once the request is successful)
+         **/
+        GraphRequest request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
+            //OnCompleted is invoked once the GraphRequest is successful
+            @Override
+            public void onCompleted(JSONObject object, GraphResponse response) {
+                try {
+                    String name = object.getString("name");
+                    String email = object.getString("email");
+                    String image = object.getJSONObject("picture").getJSONObject("data").getString("url");
+//                    displayName.setText(name);
+//                    emailID.setText(email);
+                    Log.d("name: ", name);
+                    Log.d("email: ", email);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        // We set parameters to the GraphRequest using a Bundle.
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "id,name,email,picture.width(200)");
+        request.setParameters(parameters);
+        // Initiate the GraphRequest
+        request.executeAsync();
     }
 
     public void initial(){
@@ -396,6 +578,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
         tabHost1.setCurrentTab(0);
     }
+
     public void checkPermission(){
         //현재 안드로이드 버전이 6.0미만이면 메서드를 종료한다.
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
@@ -415,8 +598,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             requestPermissions(PermissionRqList.toArray(new String[PermissionRqList.size()]),0);
         }
         else{
-            initial();
+//            initial();
+//            FACEBOOK==========================
+
         }
+
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -435,12 +621,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(getApplicationContext(), "앱권한설정하세요", Toast.LENGTH_LONG).show();
                 finish();
             }
-            initial();
+//            initial();
         }
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+
+        //FACEBOOK============================================
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+
+
         super.onActivityResult(requestCode, resultCode, data);
+
         //Gallery.clear();
         try{
             switch(requestCode){
@@ -535,6 +728,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
+
     private Boolean checkForWin(){
         String[][] field = new String[10][10];
         for (int i=0; i<10; i++){
@@ -572,6 +766,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         return false;
     }
+
     private void player1Wins(){
         countDownTimer.cancel();
         player1Points++;
@@ -596,6 +791,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }},2000);
     }
+
     private void player2Wins(){
         countDownTimer.cancel();
         player2Points++;
@@ -620,6 +816,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }},2000);
     }
+
     private void player1Win(){
         countDownTimer.cancel();
         player1Points++;
@@ -644,6 +841,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }},2000);
     }
+
     private void player2Win(){
         countDownTimer.cancel();
         player2Points++;
@@ -668,17 +866,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }},2000);
     }
+
     private void draw(){
         tiePoints++;
         Toast.makeText(this, "Again!", Toast.LENGTH_SHORT).show();
         updatePointsText();
         resetBoard();
     }
+
     private void updatePointsText(){
         textViewPlayer1.setText("Player1: " + player1Points);
         textViewPlayer2.setText("Player2: " + player2Points);
         textViewTie.setText("Tie: " + tiePoints);
     }
+
     private void resetBoard(){
         for (int i=0 ; i<10 ; i++){
             for (int j=0; j<10; j++){
@@ -690,6 +891,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         textViewPlayer1.setTextColor(Color.RED);
         textViewPlayer2.setTextColor(Color.BLACK);
     }
+
     private void resetGame(){
         countDownTimer.cancel();
         player1Points = 0;
@@ -721,4 +923,3 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     //////////////////////////////////////
 }
-

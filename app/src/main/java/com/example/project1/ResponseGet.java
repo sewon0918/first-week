@@ -11,6 +11,3 @@ public class ResponseGet {
         this.id = id; this.title = title;
         this.body = body; }
 }
-
-
-

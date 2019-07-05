@@ -29,9 +29,3 @@ public interface RetroBaseApiService {
     @DELETE("/posts/1")
     Call<ResponseBody> deleteFirst();
 
-    // GET SINGLE CONTACT
-    @GET("/api/contacts/{Id}")
-    Call<PersonInfo> getContact(@Path("Id") String id);
-
-}
-
