@@ -29,16 +29,12 @@ public class AddContact extends AppCompatActivity implements View.OnClickListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
+        setContentView(R.layout.add_contact);
         retroClient = RetroClient.getInstance(this).createBaseApi();
 
-
-        setContentView(R.layout.add_contact);
         Button addphoto = (Button) findViewById(R.id.addedphoto);
         final EditText addname = (EditText) findViewById(R.id.addedname);
         final EditText addnumber = (EditText) findViewById(R.id.addednumber);
-
         Button contactsave = (Button) findViewById(R.id.contactsave);
 
         addphoto.setOnClickListener(new View.OnClickListener() {
@@ -69,6 +65,7 @@ public class AddContact extends AppCompatActivity implements View.OnClickListene
                 //PersonInfo personinfo = new PersonInfo();
                 personinfo.setNum(addednumber);
                 personinfo.setName(addedname);
+                personinfo.setId("1");
 
                 retroClient.addContact(personinfo, new RetroCallback() {
                     @Override
@@ -126,9 +123,10 @@ public class AddContact extends AppCompatActivity implements View.OnClickListene
                             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                             smallimg.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
                             byte[] imageBytes = byteArrayOutputStream.toByteArray();
+                            String imagestr = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
                             in.close();
-                            contact.putExtra("str_photo", Base64.encodeToString(imageBytes, Base64.NO_WRAP));
-                            personinfo.setPhoto(Base64.encodeToString(imageBytes, Base64.NO_WRAP));
+                            contact.putExtra("str_photo", imagestr);
+                            personinfo.setPhoto(imagestr);
                             Button addphoto = (Button) findViewById(R.id.addedphoto);
                             addphoto.setText("사진 선택 완료");
                         }

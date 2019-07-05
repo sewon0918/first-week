@@ -50,7 +50,6 @@ public class RecyclerViewAdapterTab1 extends RecyclerView.Adapter<RecyclerViewAd
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         //Log.d(TAG, "onBindViewHolder: called.");  // this is simply for helping with debugging if needed
-
         holder.name.setText(Names.get(position));
         holder.number.setText(Numbers.get(position));
         if (PhotosStr.get(position)!=null){
@@ -60,8 +59,6 @@ public class RecyclerViewAdapterTab1 extends RecyclerView.Adapter<RecyclerViewAd
         }else{
 
         }
-
-
         final String tel = Numbers.get(position);
         // trying to open new page if you click a contact
         holder.name.setOnClickListener(new View.OnClickListener() {
@@ -87,12 +84,10 @@ public class RecyclerViewAdapterTab1 extends RecyclerView.Adapter<RecyclerViewAd
 //    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-
         TextView name;
         TextView number;
         CircleImageView photo;
         RelativeLayout parentLayout;
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.name1);
