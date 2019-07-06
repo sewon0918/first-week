@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".AddContact"/>
+        <activity android:name=".Login"/>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.project1.provider"

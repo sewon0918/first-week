@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public String name;
     private String email;
-    private String image;
+    public String image;
     public static Context context;
 
     //variables for Tab1
@@ -123,7 +123,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //FACEBOOK====================================================
     public static CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
-    private int created=0;
+    public int created=0;
+    public int contentcreated = 0;
 
     public JSONArray getContactList(){
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
@@ -365,7 +366,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         final RecyclerViewAdapterTab2 adapterTab2 = new RecyclerViewAdapterTab2(this, Gallery, GalleryName);
         recyclerViewtab2.setAdapter(adapterTab2);
         recyclerViewtab2.setLayoutManager(new GridLayoutManager(this, 3));
-        /*
+
         recyclerViewtab2.addOnItemTouchListener(new RecyclerViewOnItemClickListener(this, recyclerViewtab2,
                 new RecyclerViewOnItemClickListener.OnItemClickListener() {
                     @Override
@@ -398,36 +399,72 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         });
                     }
                 })
-        );*/
+        );
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-        //name="";
+        //        //name="";
         context=this;
         checkPermission();
 
         //FACEBOOK====================================
         callbackManager = CallbackManager.Factory.create();
 
+
+        // Defining the AccessTokenTracker
+        accessTokenTracker = new AccessTokenTracker() {
+            // This method is invoked everytime access token changes
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+                Log.d(TAG, "onCurrentAccessTokenChanged");
+                if(currentAccessToken!= null) {
+                    Log.d(TAG, "onCurrentAccessTokenChanged : about to call useinfo");
+                }
+                //==========================================================
+                boolean insideLogin = currentAccessToken != null && !currentAccessToken.isExpired();
+//                if (((Login)Login.mContext).afterlogout !=0){
+//                    insideLogin = true;
+//                }
+                if(insideLogin) {
+                    //==============================
+                    //이 부분이 로그인한 직후 실행됨
+                    Log.d(TAG, "just logged in");
+                    useLoginInformation(currentAccessToken);
+                    initial();
+                }
+                else {
+                    //==============================
+                    //이 부분이 로그아웃한 직후 실행됨
+                    Log.d(TAG, "just logged out");
+                    //Intent intent=new Intent(MainActivity.this,Login.class);
+                    //startActivity(intent);
+                    setContentView(R.layout.login);
+                    //useLoginInformation(currentAccessToken);
+                    Names.clear();
+                    Numbers.clear();
+                    PhotosStr.clear();
+                    //setContentView(R.layout.activity_main);
+                }
+                //==========================================================
+            }
+        };
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
-        if(isLoggedIn) {
-            Log.d(TAG, "true");
-        }
-        else {
-            Log.d(TAG, "false");
-        }
         if(isLoggedIn)
         {
+            Log.d(TAG, "true");
             Log.d(TAG, "onCreate, isLoggedin");
             useLoginInformation(accessToken);
-            Log.d(TAG, "onCreate, isLoggedin" + name);
+            //Log.d(TAG, "onCreate, isLoggedin" + name);
+
             initial();
         }
         else {
+            setContentView(R.layout.login);
+            Log.d(TAG, "false");
             Log.d(TAG, "onCreate, not isLoggedin");
             final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
             loginButton.bringToFront();
@@ -439,37 +476,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                }
 //            });
 
-            // Defining the AccessTokenTracker
-//            accessTokenTracker = new AccessTokenTracker() {
-//                // This method is invoked everytime access token changes
-//                @Override
-//                protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
-//                    Log.d(TAG, "onCurrentAccessTokenChanged");
-//                    if(currentAccessToken!= null) {
-//                        Log.d(TAG, "onCurrentAccessTokenChanged : about to call useinfo");
-//                        useLoginInformation(currentAccessToken);
-//                        Log.d(TAG, "onCurrentAccessTokenChanged, name : " + name);
-//                    }
-//                    //==========================================================
-//                    boolean insideLogin = currentAccessToken != null && !currentAccessToken.isExpired();
-//                    if(insideLogin) {
-//                        //==============================
-//                        //이 부분이 로그인한 직후 실행됨
-//                        Log.d(TAG, "just logged in");
-//                    }
-//                    else {
-//                        //==============================
-//                        //이 부분이 로그아웃한 직후 실행됨
-//                        Log.d(TAG, "just logged out");
-//                        Names.clear();
-//                        Numbers.clear();
-//                        PhotosStr.clear();
-//                        initTab1RecyclerView(Names, Numbers, PhotosStr);
-//                    }
-//                    //==========================================================
-//                }
-//            };
-//            accessTokenTracker.startTracking();
+            //accessTokenTracker.startTracking();
             // Callback registration
             loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                 @Override
@@ -489,7 +496,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     // App code
                     Log.d(TAG, "facebook:onCancel2");
                 }
-
                 @Override
                 public void onError(FacebookException exception) {
                     // App code
@@ -501,7 +507,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onStart() {
         Log.d(TAG, "onStart");
         super.onStart();
-//        accessTokenTracker.startTracking();
+
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         if (accessToken != null) {
             Log.d(TAG, "onStart - about to call info");
@@ -511,7 +517,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void onResume() {
+        accessTokenTracker.startTracking();
         super.onResume();
+//        initial();
         Log.d(TAG, "onResume");
     }
 
@@ -533,11 +541,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
-//        accessTokenTracker.stopTracking();
-
+        accessTokenTracker.stopTracking();
     }
 
-    private void useLoginInformation(AccessToken accessToken) {
+    void useLoginInformation(AccessToken accessToken) {
         /**
          Creating the GraphRequest to fetch user details
          1st Param - AccessToken
@@ -551,11 +558,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     name = object.getString("name");
                     //email = object.getString("email");
                     image = object.getJSONObject("picture").getJSONObject("data").getString("url");
-//                    displayName.setText(name);
-//                    emailID.setText(email);
                     Log.d("name: ", name);
                     //Log.d("email: ", email);
                     Log.d("image: ", image);
+                    initContactInfoById(name);
+                    initGalleryInfoById(name);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.d(TAG, "useinfo exception catch");
@@ -573,6 +581,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void initial(){
         setContentView(R.layout.activity_main);
 
+        Log.d(TAG, "initial들어감");
         Names.clear();
         Numbers.clear();
         PhotosStr.clear();
@@ -582,7 +591,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //Log.d("name (inside initial)", name);
         //        //}
         //useLoginInformation(accessToken);
-
         TabHost tabHost1 = (TabHost) findViewById(R.id.tabHost1);
         tabHost1.setup();
 
@@ -592,8 +600,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ts1.setIndicator("Contacts");
         tabHost1.addTab(ts1);
 
-        initContactInfoById(name);
-
+        //initContactInfoById(name);
         Button setContact = (Button)findViewById(R.id.button_setContact);
         setContact.setOnClickListener(new Button.OnClickListener(){
             @Override
@@ -618,8 +625,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ts2.setIndicator("Gallery");
         tabHost1.addTab(ts2);
 
-        //Log.d("name: ", name);
-        initGalleryInfoById(name);
+
+        //initGalleryInfoById(name);
 
         Button gallery = (Button)findViewById(R.id.button_gallery);
         Button camera = (Button)findViewById(R.id.button_camera);
