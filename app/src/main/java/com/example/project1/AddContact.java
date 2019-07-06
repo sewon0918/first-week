@@ -65,7 +65,7 @@ public class AddContact extends AppCompatActivity implements View.OnClickListene
                 //PersonInfo personinfo = new PersonInfo();
                 personinfo.setNum(addednumber);
                 personinfo.setName(addedname);
-                personinfo.setId("1");
+                personinfo.setId(((MainActivity)MainActivity.context).name);
 
                 retroClient.addContact(personinfo, new RetroCallback() {
                     @Override

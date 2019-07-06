@@ -3,6 +3,7 @@ package com.example.project1;
 import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -43,8 +44,6 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
-import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.material.appbar.AppBarLayout;
@@ -56,7 +55,6 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -70,6 +68,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Manifest.permission.READ_EXTERNAL_STORAGE
     };
 
+    public String name;
+    private String email;
+    private String image;
+    public static Context context;
+
     //variables for Tab1
     private ArrayList<String> Names = new ArrayList<>();
     private ArrayList<String> Numbers = new ArrayList<>();
@@ -77,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<String> PhotosStr = new ArrayList<>();
     private ArrayList<PersonInfo> PersonInfo = new ArrayList<>();
     private ArrayList<Bitmap> Gallery = new ArrayList<>();
-    private ArrayList<String> imageList = new ArrayList<>();
+    private ArrayList<String> GalleryName = new ArrayList<>();
     private String imageEncoded;
     private SwipeController swipeController = null;
     private final int ADD_CONTACT = 3;
@@ -113,13 +116,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     };
-    //RetroClient retroClient= RetroClient.getInstance(this).createBaseApi();
+    RetroClient retroClient= RetroClient.getInstance(this).createBaseApi();
+    //RetroClient retroClient2= RetroClient.getInstance(this).createBaseApi();
 
 
     //FACEBOOK====================================================
     public static CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
-    private int created;
+    private int created=0;
 
     public JSONArray getContactList(){
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
@@ -176,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return null;
         float width = oBitmap.getWidth();
         float height = oBitmap.getHeight();
-        float resizing_size = 120;
+        float resizing_size = 300;
         Bitmap rBitmap = null;
         if (width > resizing_size){
             float mWidth = (float) (width/100);
@@ -230,23 +234,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String photostr = PhotosStr.get(i);
             personinfo.setName(namestr);
             personinfo.setNum(numstr);
-            personinfo.setId("1");
+            personinfo.setId(name);
             if (photostr != null){
                 personinfo.setPhoto(photostr);
             }
-            RetroClient retroClient = RetroClient.getInstance(this).createBaseApi();
+            //RetroClient retroClient = RetroClient.getInstance(this).createBaseApi();
             retroClient.addContact(personinfo, new RetroCallback() {
                 @Override
                 public void onError(Throwable t) {
-                    Log.e("error", "aaaaaaaaaa");
+                    Log.e("error", "initcontacterror");
                 }
                 @Override
                 public void onSuccess(int code, Object receivedData) {
-//                    PersonInfo data = (PersonInfo) receivedData;
-//                    String str = data.getName();
-//                    //Log.d("aa", String.format("%s", data.getName()));
-//                    Log.d("aa",  str);
-//                    finish();
                     initTab1RecyclerView(Names, Numbers, PhotosStr);
                 }
                 @Override
@@ -255,14 +254,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             });
         }
-//        initTab1RecyclerView(Names, Numbers, PhotosStr);
     }
     private void initContactInfoById(String Id) {
-        RetroClient retroClient = RetroClient.getInstance(this).createBaseApi();
+        Names.clear();
+        Numbers.clear();
+        PhotosStr.clear();
+        //RetroClient retroClient = RetroClient.getInstance(this).createBaseApi();
         retroClient.getAllContact(Id, new RetroCallback() {
             @Override
             public void onError(Throwable t) {
-                Log.e("error", "aaaaaaaaaa");
+                Log.e("error", "initcontactbyiderror");
             }
             @Override
             public void onSuccess(int code, Object receivedData) {
@@ -279,10 +280,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.e("error", "ddddd");
             }
         });
-//        initTab1RecyclerView(Names, Numbers, PhotosStr);
     }
 
-    private void initTab1RecyclerView(ArrayList<String> Names, ArrayList<String> Numbers, ArrayList<String> PhotosStr) {
+    private void initTab1RecyclerView(final ArrayList<String> Names, final ArrayList<String> Numbers, final ArrayList<String> PhotosStr) {
         Log.d(TAG, "initTab1RecyclerView: init recyclerView.");
         final RecyclerView recyclerViewtab1 = findViewById(R.id.recycler_view_tab1);
         final RecyclerViewAdapterTab1 adapterTab1 = new RecyclerViewAdapterTab1(Names, Numbers, PhotosStr,this);
@@ -290,13 +290,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerViewtab1.setLayoutManager(new LinearLayoutManager(this));
         swipeController = new SwipeController(new SwipeControllerActions() {
             @Override
-            public void onRightClicked(int position) {
-                // 아답타에게 알린다
-                adapterTab1.Names.remove(position);
-                adapterTab1.Numbers.remove(position);
-                adapterTab1.PhotosStr.remove(position);
-                adapterTab1.notifyItemRemoved(position);
-                adapterTab1.notifyItemRangeChanged(position, adapterTab1.getItemCount());
+            public void onRightClicked(final int position) {
+                //RetroClient retroClient = RetroClient.getInstance(this).createBaseApi();
+                String deletename = Names.get(position);
+//                Names.remove(position);
+//                Numbers.remove(position);
+//                PhotosStr.remove(position);
+                retroClient.deleteContact(name, deletename, new RetroCallback() {
+                    @Override
+                    public void onError(Throwable t) {
+                        Log.e("error", "deletecintacterror");
+                    }
+                    @Override
+                    public void onSuccess(int code, Object receivedData) {
+                        // 아답타에게 알린다
+                        adapterTab1.Names.remove(position);
+                        adapterTab1.Numbers.remove(position);
+                        adapterTab1.PhotosStr.remove(position);
+                        adapterTab1.notifyItemRemoved(position);
+                        adapterTab1.notifyItemRangeChanged(position, adapterTab1.getItemCount());
+                    }
+                    @Override
+                    public void onFailure(int code) {
+                        Log.e("error", "ddddd");
+                    }
+                });
             }
         });
         ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
@@ -314,18 +332,81 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initTab2RecyclerView(Gallery);
     }
 
+    private void initGalleryInfoById(String Id) {
+        Gallery.clear();
+        GalleryName.clear();
+        retroClient.getAllGallery(Id, new RetroCallback() {
+            @Override
+            public void onError(Throwable t) {
+                Log.e("error", "initgallerybyiderror");
+            }
+            @Override
+            public void onSuccess(int code, Object receivedData) {
+                List<GalleryInfo> data = (List<GalleryInfo>) receivedData;
+                for (int i=0; i<data.size(); i++){
+                    String gallerystr = data.get(i).getGallery();
+                    byte[] decodedByteArray = Base64.decode(gallerystr, Base64.NO_WRAP);
+                    Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.length);
+                    Gallery.add(decodedBitmap);
+                    GalleryName.add(String.valueOf(Gallery.size()));
+                }
+                initTab2RecyclerView(Gallery);
+            }
+            @Override
+            public void onFailure(int code) {
+                Log.e("error", "ddddd");
+            }
+        });
+    }
+    //Context context = this;
     private void initTab2RecyclerView(ArrayList<Bitmap> Gallery) {
         Log.d(TAG, "initTab2RecyclerView: init recyclerView for tab2.");
-        RecyclerView recyclerViewtab2 = findViewById(R.id.recycler_view_tab2);
-        RecyclerViewAdapterTab2 adapterTab2 = new RecyclerViewAdapterTab2(this, Gallery);
+        final RecyclerView recyclerViewtab2 = findViewById(R.id.recycler_view_tab2);
+        final RecyclerViewAdapterTab2 adapterTab2 = new RecyclerViewAdapterTab2(this, Gallery, GalleryName);
         recyclerViewtab2.setAdapter(adapterTab2);
         recyclerViewtab2.setLayoutManager(new GridLayoutManager(this, 3));
+        /*
+        recyclerViewtab2.addOnItemTouchListener(new RecyclerViewOnItemClickListener(this, recyclerViewtab2,
+                new RecyclerViewOnItemClickListener.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View v, int position) {
+                        Log.d(TAG, "click");
+                    }
+
+                    @Override
+                    public void onItemLongClick(View v, final int position) {
+                        Log.d(TAG, String.valueOf(position));
+                        retroClient.deleteGallery(name, GalleryName.get(position), new RetroCallback() {
+                            @Override
+                            public void onError(Throwable t) {
+                                Log.e("error", "aaaaaaaaaa");
+                            }
+                            @Override
+                            public void onSuccess(int code, Object receivedData) {
+                                // 아답타에게 알린다
+                                //Gallery.remove(position);
+                                //GalleryName.remove(position);
+                                adapterTab2.mData.remove(position);
+                                adapterTab2.mName.remove(position);
+                                adapterTab2.notifyItemRemoved(position);
+                                adapterTab2.notifyItemRangeChanged(position, adapterTab2.getItemCount());
+                            }
+                            @Override
+                            public void onFailure(int code) {
+                                Log.e("error", "ddddd");
+                            }
+                        });
+                    }
+                })
+        );*/
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.login);
+        //name="";
+        context=this;
         checkPermission();
 
         //FACEBOOK====================================
@@ -333,81 +414,76 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
-
-
         if(isLoggedIn) {
             Log.d(TAG, "true");
         }
         else {
             Log.d(TAG, "false");
         }
-
         if(isLoggedIn)
         {
+            Log.d(TAG, "onCreate, isLoggedin");
+            useLoginInformation(accessToken);
+            Log.d(TAG, "onCreate, isLoggedin" + name);
             initial();
         }
         else {
+            Log.d(TAG, "onCreate, not isLoggedin");
             final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
             loginButton.bringToFront();
-            loginButton.setReadPermissions(Arrays.asList(
-                    "public_profile", "email"));
+            loginButton.setReadPermissions("public_profile");
+//            loginButton.setOnClickListener(new Button.OnClickListener(){
+//                @Override
+//                public void onClick(View v){
+//                    LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile"));
+//                }
+//            });
 
             // Defining the AccessTokenTracker
-            accessTokenTracker = new AccessTokenTracker() {
-                // This method is invoked everytime access token changes
-                @Override
-                protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
-
-                    if(currentAccessToken!= null) {
-                        Log.d(TAG, "onCurrentAccessTokenChanged");
-                        useLoginInformation(currentAccessToken);
-                    }
-
-                }
-            };
-
-
-            LoginManager.getInstance().registerCallback(callbackManager,
-                    new FacebookCallback<LoginResult>() {
-                        @Override
-                        public void onSuccess(LoginResult loginResult) {
-                            // App code,,
-                            Log.d(TAG, "facebook:onSuccess1");
-
-                            AccessToken accessToken = loginResult.getAccessToken();
-                            if (accessToken != null) {
-                                useLoginInformation(accessToken);
-                            }
-                            if(created == 0) {
-                                initial();
-                                created ++;
-                            }
-                        }
-
-                        @Override
-                        public void onCancel() {
-                            // App code
-                            Log.d(TAG, "facebook:onCancel1");
-                        }
-
-                        @Override
-                        public void onError(FacebookException exception) {
-                            // App code
-                        }
-                    });
-
+//            accessTokenTracker = new AccessTokenTracker() {
+//                // This method is invoked everytime access token changes
+//                @Override
+//                protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+//                    Log.d(TAG, "onCurrentAccessTokenChanged");
+//                    if(currentAccessToken!= null) {
+//                        Log.d(TAG, "onCurrentAccessTokenChanged : about to call useinfo");
+//                        useLoginInformation(currentAccessToken);
+//                        Log.d(TAG, "onCurrentAccessTokenChanged, name : " + name);
+//                    }
+//                    //==========================================================
+//                    boolean insideLogin = currentAccessToken != null && !currentAccessToken.isExpired();
+//                    if(insideLogin) {
+//                        //==============================
+//                        //이 부분이 로그인한 직후 실행됨
+//                        Log.d(TAG, "just logged in");
+//                    }
+//                    else {
+//                        //==============================
+//                        //이 부분이 로그아웃한 직후 실행됨
+//                        Log.d(TAG, "just logged out");
+//                        Names.clear();
+//                        Numbers.clear();
+//                        PhotosStr.clear();
+//                        initTab1RecyclerView(Names, Numbers, PhotosStr);
+//                    }
+//                    //==========================================================
+//                }
+//            };
+//            accessTokenTracker.startTracking();
             // Callback registration
             loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                 @Override
                 public void onSuccess(LoginResult loginResult) {
                     Log.d(TAG, "facebook:onSuccess2");
                     AccessToken accessToken = loginResult.getAccessToken();
+//                    AccessToken accessToken = AccessToken.getCurrentAccessToken();
+                    useLoginInformation(accessToken);
+                    Log.d(TAG, "onSuccess2 : " + name);
                     if(created == 0) {
                         initial();
                         created ++;
                     }
                 }
-
                 @Override
                 public void onCancel() {
                     // App code
@@ -425,11 +501,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onStart() {
         Log.d(TAG, "onStart");
         super.onStart();
-
 //        accessTokenTracker.startTracking();
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         if (accessToken != null) {
+            Log.d(TAG, "onStart - about to call info");
             useLoginInformation(accessToken);
+            Log.d(TAG, "onStart - info, name : " + name);
         }
     }
 
@@ -471,27 +548,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onCompleted(JSONObject object, GraphResponse response) {
                 try {
-                    String name = object.getString("name");
-                    String email = object.getString("email");
-                    String image = object.getJSONObject("picture").getJSONObject("data").getString("url");
+                    name = object.getString("name");
+                    //email = object.getString("email");
+                    image = object.getJSONObject("picture").getJSONObject("data").getString("url");
 //                    displayName.setText(name);
 //                    emailID.setText(email);
                     Log.d("name: ", name);
-                    Log.d("email: ", email);
+                    //Log.d("email: ", email);
+                    Log.d("image: ", image);
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    Log.d(TAG, "useinfo exception catch");
                 }
             }
         });
         // We set parameters to the GraphRequest using a Bundle.
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "id,name,email,picture.width(200)");
+        parameters.putString("fields", "id,name,picture.width(200)");
         request.setParameters(parameters);
         // Initiate the GraphRequest
         request.executeAsync();
     }
 
     public void initial(){
+        setContentView(R.layout.activity_main);
+
+        Names.clear();
+        Numbers.clear();
+        PhotosStr.clear();
+        Gallery.clear();
+        GalleryName.clear();
+       // if (accessToken != null) {
+                //Log.d("name (inside initial)", name);
+        //        //}
+        //useLoginInformation(accessToken);
 
         TabHost tabHost1 = (TabHost) findViewById(R.id.tabHost1);
         tabHost1.setup();
@@ -502,7 +592,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ts1.setIndicator("Contacts");
         tabHost1.addTab(ts1);
 
-        initContactInfoById("1");
+        initContactInfoById(name);
 
         Button setContact = (Button)findViewById(R.id.button_setContact);
         setContact.setOnClickListener(new Button.OnClickListener(){
@@ -512,8 +602,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 initContactInfo(jArray);
             }
         });
-//        JSONArray jArray = getContactList();
-//        initContactInfo(jArray);
 
         Button addContact = (Button)findViewById(R.id.button_addContact);
         addContact.setOnClickListener(new Button.OnClickListener(){
@@ -529,6 +617,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ts2.setContent(R.id.content2);
         ts2.setIndicator("Gallery");
         tabHost1.addTab(ts2);
+
+        //Log.d("name: ", name);
+        initGalleryInfoById(name);
+
         Button gallery = (Button)findViewById(R.id.button_gallery);
         Button camera = (Button)findViewById(R.id.button_camera);
         gallery.setOnClickListener(new Button.OnClickListener(){
@@ -600,7 +692,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else{
 //            initial();
 //            FACEBOOK==========================
-
         }
 
     }
@@ -627,10 +718,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-
         //FACEBOOK============================================
         callbackManager.onActivityResult(requestCode, resultCode, data);
-
 
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -644,16 +733,65 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             for (int i=0; i<count; i++){
                                 Uri uri = data.getClipData().getItemAt(i).getUri();
                                 Bitmap bm = Images.Media.getBitmap(getContentResolver(), uri);
+                                Bitmap smallbm = resizingBitmap(bm);
+                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                smallbm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                                byte[] bytes = stream.toByteArray();
+                                String addedgallery = Base64.encodeToString(bytes, Base64.NO_WRAP);
+
                                 Gallery.add(bm);
+                                GalleryName.add(String.valueOf(Gallery.size()));
+                                GalleryInfo galleryinfo = new GalleryInfo();
+                                galleryinfo.setGallery(addedgallery);
+                                galleryinfo.setId(name);
+                                galleryinfo.setName(String.valueOf(Gallery.size()));
+
+                                retroClient.addGallery(galleryinfo, new RetroCallback() {
+                                    @Override
+                                    public void onError(Throwable t) {
+                                        Log.e("error", "aaaaaaaaaa");
+                                    }
+                                    @Override
+                                    public void onSuccess(int code, Object receivedData) {
+                                        initGalleryInfo(Gallery);
+                                    }
+                                    @Override
+                                    public void onFailure(int code) {
+                                        Log.e("error", "ddddd");
+                                    }
+                                });
                             }
                         }
                         else if(data.getData() != null){
                             InputStream in = getContentResolver().openInputStream(data.getData());
                             Bitmap img = BitmapFactory.decodeStream(in);
-                            in.close();
                             Gallery.add(img);
+                            GalleryName.add(String.valueOf(Gallery.size()));
+                            Bitmap smallimg = resizingBitmap(img);
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            smallimg.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                            byte[] bytes = stream.toByteArray();
+                            String addedgallery = Base64.encodeToString(bytes, Base64.NO_WRAP);
+                            in.close();
+                            GalleryInfo galleryinfo = new GalleryInfo();
+                            galleryinfo.setGallery(addedgallery);
+                            galleryinfo.setId(name);
+                            galleryinfo.setName(String.valueOf(Gallery.size()));
+                            retroClient.addGallery(galleryinfo, new RetroCallback() {
+                                @Override
+                                public void onError(Throwable t) {
+                                    Log.e("error", "aaaaaaaaaa");
+                                }
+                                @Override
+                                public void onSuccess(int code, Object receivedData) {
+                                    initGalleryInfo(Gallery);
+                                }
+                                @Override
+                                public void onFailure(int code) {
+                                    Log.e("error", "ddddd");
+                                }
+                            });
                         }
-                        initGalleryInfo(Gallery);
                     }else{
                         Toast.makeText(MainActivity.this, "사진 선택을 취소하였습니다.", Toast.LENGTH_SHORT).show();
                     }
@@ -661,11 +799,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 case TAKE_PICTURE:
                     if (resultCode == RESULT_OK && data.hasExtra("data")) {
                         Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                        if (bitmap != null) {
-                            Gallery.add(bitmap);
-                        }
-                        initGalleryInfo(Gallery);
-                        //num.setText(String.valueOf(Gallery.size()));
+                        //if (bitmap != null) {
+                        Gallery.add(bitmap);
+                        //}
+                        GalleryName.add(String.valueOf(Gallery.size()));
+                        //Bitmap smallbitmap = resizingBitmap(bitmap);
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                        byte[] bytes = stream.toByteArray();
+                        String addedgallery = Base64.encodeToString(bytes, Base64.NO_WRAP);
+                        GalleryInfo galleryinfo = new GalleryInfo();
+                        galleryinfo.setGallery(addedgallery);
+                        galleryinfo.setId(name);
+                        galleryinfo.setName(String.valueOf(Gallery.size()));
+                        retroClient.addGallery(galleryinfo, new RetroCallback() {
+                            @Override
+                            public void onError(Throwable t) {
+                                Log.e("error", "aaaaaaaaaa");
+                            }
+                            @Override
+                            public void onSuccess(int code, Object receivedData) {
+                                initGalleryInfo(Gallery);
+                            }
+                            @Override
+                            public void onFailure(int code) {
+                                Log.e("error", "ddddd");
+                            }
+                        });
+                        //initGalleryInfo(Gallery);
                     }else{
                         Toast.makeText(MainActivity.this, "사진 찍기를 취소하였습니다.", Toast.LENGTH_SHORT).show();
                     }

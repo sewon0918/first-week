@@ -2,7 +2,6 @@ package com.example.project1;
 
 import android.content.Context;
 
-import java.util.HashMap;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -91,11 +90,10 @@ public class RetroClient {
         }));
     }
 
-
-    public void putFirst(HashMap<String, Object> parameters, final RetroCallback callback) {
-        apiService.putFirst(new RequestPut(parameters)).enqueue(new Callback<ResponseGet>() {
+    public void deleteContact(String id, String name, final RetroCallback callback) {
+        apiService.deleteContact(id, name).enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseGet> call, Response<ResponseGet> response) {
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
                     callback.onSuccess(response.code(), response.body());
                 } else {
@@ -103,16 +101,48 @@ public class RetroClient {
                 }
             }
             @Override
-            public void onFailure(Call<ResponseGet> call, Throwable t) {
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
                 callback.onError(t);
             }
         });
     }
 
+    public void getAllGallery(String id, final RetroCallback callback) {
+        apiService.getAllGallery(id).enqueue(new Callback<List<GalleryInfo>>(){
+            @Override
+            public void onResponse(Call<List<GalleryInfo>> call, Response<List<GalleryInfo>> response) {
+                if(response.isSuccessful()){
+                    callback.onSuccess(response.code(), response.body());
+                } else {
+                    callback.onFailure(response.code());
+                }
+            }
+            @Override
+            public void onFailure(Call<List<GalleryInfo>> call, Throwable t) {
+                callback.onError(t);
+            }
+        });
+    }
 
+    public void addGallery(GalleryInfo galleryInfo, final RetroCallback callback){
+        apiService.addGallery(galleryInfo).enqueue((new Callback<GalleryInfo>() {
+            @Override
+            public void onResponse(Call<GalleryInfo> call, Response<GalleryInfo> response) {
+                if(response.isSuccessful()){
+                    callback.onSuccess(response.code(), response.body());
+                } else {
+                    callback.onFailure(response.code());
+                }
+            }
+            @Override
+            public void onFailure(Call<GalleryInfo> call, Throwable t) {
+                callback.onError(t);
+            }
+        }));
+    }
 
-    public void deleteFirst(final RetroCallback callback) {
-        apiService.deleteFirst().enqueue(new Callback<ResponseBody>() {
+    public void deleteGallery(String id, String name, final RetroCallback callback) {
+        apiService.deleteGallery(id, name).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful()) {

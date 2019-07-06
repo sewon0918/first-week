@@ -17,12 +17,15 @@ public class RecyclerViewAdapterTab2 extends RecyclerView.Adapter<RecyclerViewAd
 
     private static final String TAG = "RecyclerViewAdapterTab2";
 
-    private Context mContext;
-    private ArrayList<Bitmap> mData;
+    public Context mContext;
+    public ArrayList<Bitmap> mData;
+    public ArrayList<String> mName;
 
-    public RecyclerViewAdapterTab2(Context mContext, ArrayList<Bitmap> mData) {
+
+    public RecyclerViewAdapterTab2(Context mContext, ArrayList<Bitmap> mData, ArrayList<String> mName) {
         this.mContext = mContext;
         this.mData = mData;
+        this.mName = mName;
     }
 
     @NonNull

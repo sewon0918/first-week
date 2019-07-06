@@ -8,7 +8,6 @@ import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
-import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface RetroBaseApiService {
@@ -18,15 +17,26 @@ public interface RetroBaseApiService {
     @GET("/api/contacts/{id}")
     Call<List<PersonInfo>> getAllContact(@Path("id") String id);
 
-
     // ADD SINGLE CONTACT
     @POST("/api/contacts")
     Call<PersonInfo> addContact(@Body PersonInfo personinfo);
 
-    @PUT("/posts/1") Call<ResponseGet> putFirst(@Body RequestPut parameters);
+    // DELETE CONTACT
+    @DELETE("/api/contacts/{id}/{name}")
+    Call<ResponseBody> deleteContact(@Path("id") String id, @Path("name") String name);
 
 
-    @DELETE("/posts/1")
-    Call<ResponseBody> deleteFirst();
+    //GET ALL GALLERIES
+    @GET("/api/galleries/{id}")
+    Call<List<GalleryInfo>> getAllGallery(@Path("id") String id);
+
+    // ADD SINGLE GALLERY
+    @POST("/api/galleries")
+    Call<GalleryInfo> addGallery(@Body GalleryInfo galleryinfo);
+
+    // DELETE GALLERY
+    @DELETE("/api/galleries/{id}/{name}")
+    Call<ResponseBody> deleteGallery(@Path("id") String id, @Path("name") String name);
+
 }
 

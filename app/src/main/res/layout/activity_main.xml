@@ -13,13 +13,13 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <com.facebook.login.widget.LoginButton
-        android:id="@+id/login_button"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="580dp"
-        android:layout_marginBottom="30dp"/>
+    <!--<com.facebook.login.widget.LoginButton-->
+        <!--android:id="@+id/login_button"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_marginTop="570dp"/>-->
+        <!--//android:layout_marginLeft="250dp"/>-->
 
     <TabHost
         android:id="@+id/tabHost1"
@@ -31,7 +31,13 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/login_button"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_gravity="right"/>
+                //android:layout_marginTop="570dp"/>
+            //android:layout_marginLeft="250dp"/>
 
             <!-- TabWidget의 id값이 반드시 "tabs"로 지정되어야 함. -->
             <TabWidget
@@ -45,24 +51,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-
                 <LinearLayout
                     android:id="@+id/content1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
-                    <Button
-                        android:id="@+id/button_addContact"
-                        android:layout_width="match_parent"
+                    <LinearLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Add contact"/>
-                    <Button
-                        android:id="@+id/button_setContact"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="동기화"/>
-
-
+                        android:orientation="horizontal">
+                        <Button
+                            android:id="@+id/button_addContact"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Add contact"/>
+                        <Button
+                            android:id="@+id/button_setContact"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="동기화"/>
+                    </LinearLayout>
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:layout_height="match_parent"
@@ -70,6 +78,14 @@
                         android:id="@+id/recycler_view_tab1"
                         android:scrollbars="vertical">
                     </androidx.recyclerview.widget.RecyclerView>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/ll"
+                        android:orientation="horizontal">
+
+                    </LinearLayout>
 
                     <!--<com.facebook.login.widget.LoginButton-->
                         <!--android:id="@+id/login_button"-->
