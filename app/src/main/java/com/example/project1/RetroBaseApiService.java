@@ -11,7 +11,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface RetroBaseApiService {
-    final String Base_URL = "http://ec2-13-209-21-20.ap-northeast-2.compute.amazonaws.com:8000";
+    final String Base_URL = "http://143.248.36.26:8000";
 
     //GET ALL CONTACTS
     @GET("/api/contacts/{id}")

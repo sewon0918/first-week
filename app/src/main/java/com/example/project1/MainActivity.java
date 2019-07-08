@@ -6,25 +6,18 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.os.Handler;
-import android.os.PersistableBundle;
 import android.provider.ContactsContract;
 import android.provider.MediaStore.Images;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -63,11 +56,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -391,8 +381,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 false).setPositiveButton("Yes",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-
                                         Log.d(TAG, "deleting : " + String.valueOf(position));
+
+                                        GalleryName.remove(position);
+                                        adapterTab2.mData.remove(position);
+                                        adapterTab2.notifyItemRemoved(position);
+                                        adapterTab2.notifyItemRangeChanged(position, adapterTab2.getItemCount());
+
+                                        Log.d(TAG, "after deleting : " + String.valueOf(position));
+
                                         retroClient.deleteGallery(name, removedgallery, new RetroCallback() {
                                             @Override
                                             public void onError(Throwable t) {
@@ -400,11 +397,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                             }
                                             @Override
                                             public void onSuccess(int code, Object receivedData) {
-                                                GalleryName.remove(position);
-                                                adapterTab2.mData.remove(position);
-                                                //adapterTab2.mName.remove(position);
-                                                adapterTab2.notifyItemRemoved(position);
-                                                adapterTab2.notifyItemRangeChanged(position, adapterTab2.getItemCount());
+//                                                GalleryName.remove(position);
+//                                                adapterTab2.mData.remove(position);
+//                                                //adapterTab2.mName.remove(position);
+//                                                adapterTab2.notifyItemRemoved(position);
+//                                                adapterTab2.notifyItemRangeChanged(position, adapterTab2.getItemCount());
 
                                             }
                                             @Override
@@ -645,9 +642,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
-
-
                     initContactInfoById(name);
                     initGalleryInfoById(name);
 
@@ -837,11 +831,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 Bitmap bm = Images.Media.getBitmap(getContentResolver(), uri);
                                 Bitmap smallbm = resizingBitmap(bm);
                                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                                smallbm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                                smallbm.compress(Bitmap.CompressFormat.JPEG, 50, stream);
                                 byte[] bytes = stream.toByteArray();
                                 String addedgallery = Base64.encodeToString(bytes, Base64.NO_WRAP);
 
-                                Gallery.add(bm);
+                                Gallery.add(smallbm);
                                 double random = Math.random();
                                 GalleryName.add(String.valueOf(random));
                                 GalleryInfo galleryinfo = new GalleryInfo();
@@ -868,14 +862,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         else if(data.getData() != null){
                             InputStream in = getContentResolver().openInputStream(data.getData());
                             Bitmap img = BitmapFactory.decodeStream(in);
-                            Gallery.add(img);
-                            double random2 = Math.random();
-                            GalleryName.add(String.valueOf(random2));
+
                             Bitmap smallimg = resizingBitmap(img);
                             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                            smallimg.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                            smallimg.compress(Bitmap.CompressFormat.JPEG, 50, stream);
                             byte[] bytes = stream.toByteArray();
                             String addedgallery = Base64.encodeToString(bytes, Base64.NO_WRAP);
+                            Gallery.add(smallimg);
+                            double random2 = Math.random();
+                            GalleryName.add(String.valueOf(random2));
                             in.close();
                             GalleryInfo galleryinfo = new GalleryInfo();
                             galleryinfo.setGallery(addedgallery);
