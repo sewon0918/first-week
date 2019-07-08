@@ -652,12 +652,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         ImageView img1 = (ImageView) findViewById(R.id.imageView);
         ImageView img2 = (ImageView) findViewById(R.id.imageView2);
-        ImageView phone1 = (ImageView) findViewById(R.id.image_phone);
-        ImageView phone2 = (ImageView) findViewById(R.id.image_phone2);
-        ImageView phone3 = (ImageView) findViewById(R.id.image_phone3);
+//        ImageView phone1 = (ImageView) findViewById(R.id.image_phone);
+//        ImageView phone2 = (ImageView) findViewById(R.id.image_phone2);
+//        ImageView phone3 = (ImageView) findViewById(R.id.image_phone3);
 
-        TextView single = (TextView) findViewById(R.id.SINGLEPLAY);
-        TextView multi = (TextView) findViewById(R.id.MULTIPLAY);
+        TextView single = (TextView) findViewById(R.id.textView4);
+//        TextView multi = (TextView) findViewById(R.id.MULTIPLAY);
 
         img1.setOnClickListener(new View.OnClickListener(){
             @Override

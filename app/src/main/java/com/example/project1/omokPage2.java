@@ -1,6 +1,7 @@
 package com.example.project1;
 
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -121,6 +122,10 @@ public class omokPage2 extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.omok_page);
+
+        MediaPlayer mMediaPlayer = MediaPlayer.create(this, R.raw.whistle);
+        mMediaPlayer.setLooping(true);
+        mMediaPlayer.start();
 
         textViewPlayer1 = findViewById(R.id.text_view_p1);
         textViewPlayer2 = findViewById(R.id.text_view_p2);

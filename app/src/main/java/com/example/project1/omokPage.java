@@ -2,6 +2,9 @@ package com.example.project1;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -36,6 +39,11 @@ public class omokPage extends AppCompatActivity {
     private TextView timer;
     RetroClient retroClient = RetroClient.getInstance(this).createBaseApi();
 
+
+
+
+
+
     private CountDownTimer countDownTimer = new CountDownTimer(20000, 1000) {
         public void onTick(long millisUntilFinished) {
             timer.setText(String.format(Locale.getDefault(), "%d sec left.", millisUntilFinished / 1000L));
@@ -58,6 +66,18 @@ public class omokPage extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.omok_page);
+
+
+        // BGM
+//        SoundPool sound = new SoundPool(1, AudioManager.STREAM_ALARM, 0);// maxStreams, streamType, srcQuality
+//        int soundId = sound.load(this, R.raw.cut_whisper, 1);
+//        sound.play(soundId, 1.0F, 1.0F,  1,  -1,  1.5F);
+
+        MediaPlayer mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.whistle);
+        mMediaPlayer.setLooping(true);
+        mMediaPlayer.start();
+
+
 
         textViewPlayer1 = findViewById(R.id.text_view_p1);
         textViewPlayer2 = findViewById(R.id.text_view_p2);
