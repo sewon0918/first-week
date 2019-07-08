@@ -49,7 +49,7 @@ public class RetroClient {
      * create you ApiService
      * Create an implementation of the API endpoints defined by the {@code service} interface.
      */
-    public  <T> T create(final Class<T> service) {
+    public <T> T create(final Class<T> service) {
         if (service == null) {
             throw new RuntimeException("Api service is null!");
         }
@@ -57,15 +57,16 @@ public class RetroClient {
     }
 
     public void getAllContact(String id, final RetroCallback callback) {
-        apiService.getAllContact(id).enqueue(new Callback<List<PersonInfo>>(){
+        apiService.getAllContact(id).enqueue(new Callback<List<PersonInfo>>() {
             @Override
             public void onResponse(Call<List<PersonInfo>> call, Response<List<PersonInfo>> response) {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     callback.onSuccess(response.code(), response.body());
                 } else {
                     callback.onFailure(response.code());
                 }
             }
+
             @Override
             public void onFailure(Call<List<PersonInfo>> call, Throwable t) {
                 callback.onError(t);
@@ -73,16 +74,17 @@ public class RetroClient {
         });
     }
 
-    public void addContact(PersonInfo personInfo, final RetroCallback callback){
+    public void addContact(PersonInfo personInfo, final RetroCallback callback) {
         apiService.addContact(personInfo).enqueue((new Callback<PersonInfo>() {
             @Override
             public void onResponse(Call<PersonInfo> call, Response<PersonInfo> response) {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     callback.onSuccess(response.code(), response.body());
                 } else {
                     callback.onFailure(response.code());
                 }
             }
+
             @Override
             public void onFailure(Call<PersonInfo> call, Throwable t) {
                 callback.onError(t);
@@ -100,6 +102,7 @@ public class RetroClient {
                     callback.onFailure(response.code());
                 }
             }
+
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 callback.onError(t);
@@ -108,15 +111,16 @@ public class RetroClient {
     }
 
     public void getAllGallery(String id, final RetroCallback callback) {
-        apiService.getAllGallery(id).enqueue(new Callback<List<GalleryInfo>>(){
+        apiService.getAllGallery(id).enqueue(new Callback<List<GalleryInfo>>() {
             @Override
             public void onResponse(Call<List<GalleryInfo>> call, Response<List<GalleryInfo>> response) {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     callback.onSuccess(response.code(), response.body());
                 } else {
                     callback.onFailure(response.code());
                 }
             }
+
             @Override
             public void onFailure(Call<List<GalleryInfo>> call, Throwable t) {
                 callback.onError(t);
@@ -124,16 +128,17 @@ public class RetroClient {
         });
     }
 
-    public void addGallery(GalleryInfo galleryInfo, final RetroCallback callback){
+    public void addGallery(GalleryInfo galleryInfo, final RetroCallback callback) {
         apiService.addGallery(galleryInfo).enqueue((new Callback<GalleryInfo>() {
             @Override
             public void onResponse(Call<GalleryInfo> call, Response<GalleryInfo> response) {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     callback.onSuccess(response.code(), response.body());
                 } else {
                     callback.onFailure(response.code());
                 }
             }
+
             @Override
             public void onFailure(Call<GalleryInfo> call, Throwable t) {
                 callback.onError(t);
@@ -151,6 +156,7 @@ public class RetroClient {
                     callback.onFailure(response.code());
                 }
             }
+
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 callback.onError(t);
@@ -160,15 +166,16 @@ public class RetroClient {
 
 
     public void getBoard(final RetroCallback callback) {
-        apiService.getBoard().enqueue(new Callback<List<coordinates>>(){
+        apiService.getBoard().enqueue(new Callback<List<coordinates>>() {
             @Override
             public void onResponse(Call<List<coordinates>> call, Response<List<coordinates>> response) {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     callback.onSuccess(response.code(), response.body());
                 } else {
                     callback.onFailure(response.code());
                 }
             }
+
             @Override
             public void onFailure(Call<List<coordinates>> call, Throwable t) {
                 callback.onError(t);
@@ -176,16 +183,17 @@ public class RetroClient {
         });
     }
 
-    public void addPoint(coordinates coordinates, final RetroCallback callback){
+    public void addPoint(coordinates coordinates, final RetroCallback callback) {
         apiService.addPoint(coordinates).enqueue((new Callback<coordinates>() {
             @Override
             public void onResponse(Call<coordinates> call, Response<coordinates> response) {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     callback.onSuccess(response.code(), response.body());
                 } else {
                     callback.onFailure(response.code());
                 }
             }
+
             @Override
             public void onFailure(Call<coordinates> call, Throwable t) {
                 callback.onError(t);
@@ -203,10 +211,65 @@ public class RetroClient {
                     callback.onFailure(response.code());
                 }
             }
+
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 callback.onError(t);
             }
         });
+    }
+
+    public void addUser(String id, final RetroCallback callback) {
+        apiService.addUser(id).enqueue((new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.code(), response.body());
+                } else {
+                    callback.onFailure(response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                callback.onError(t);
+            }
+        }));
+    }
+
+    public void delUser(String id, final RetroCallback callback) {
+        apiService.delUser(id).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.code(), response.body());
+                } else {
+                    callback.onFailure(response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                callback.onError(t);
+            }
+        });
+    }
+
+    public void getUser(String id, final RetroCallback callback) {
+        apiService.getUser(id).enqueue((new Callback<List<String>>() {
+            @Override
+            public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.code(), response.body());
+                } else {
+                    callback.onFailure(response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<String>> call, Throwable t) {
+                callback.onError(t);
+            }
+        }));
     }
 }

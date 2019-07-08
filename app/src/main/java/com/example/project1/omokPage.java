@@ -39,7 +39,8 @@ public class omokPage extends AppCompatActivity {
     private TextView timer;
     RetroClient retroClient = RetroClient.getInstance(this).createBaseApi();
 
-
+    MediaPlayer mMediaPlayer = MediaPlayer.create(this, R.raw.cut_whisper);
+    MediaPlayer mediaPlayer2 = MediaPlayer.create(getBaseContext(), R.raw.biryong_cut);
 
 
 
@@ -73,8 +74,8 @@ public class omokPage extends AppCompatActivity {
 //        int soundId = sound.load(this, R.raw.cut_whisper, 1);
 //        sound.play(soundId, 1.0F, 1.0F,  1,  -1,  1.5F);
 
-        MediaPlayer mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.whistle);
-        mMediaPlayer.setLooping(true);
+//        MediaPlayer mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.cut_whisper);
+//        mMediaPlayer.setLooping(true);
         mMediaPlayer.start();
 
 
@@ -150,7 +151,6 @@ public class omokPage extends AppCompatActivity {
                 textViewPlayer2.setTextColor(Color.RED);
             }
         }
-
     }
 
     public void onClick(View v){
@@ -196,6 +196,8 @@ public class omokPage extends AppCompatActivity {
     }
 
     private void player1Wins(){
+        mMediaPlayer.stop();
+        mediaPlayer2.start();
         countDownTimer.cancel();
         player1Points++;
         Toast toast = Toast.makeText(this, "Player 1 wins!", Toast.LENGTH_SHORT);
@@ -221,6 +223,8 @@ public class omokPage extends AppCompatActivity {
     }
 
     private void player2Wins(){
+        mMediaPlayer.stop();
+        mediaPlayer2.start();
         countDownTimer.cancel();
         player2Points++;
         Toast toast2 = Toast.makeText(this, "Player 2 wins!", Toast.LENGTH_SHORT);
@@ -318,6 +322,8 @@ public class omokPage extends AppCompatActivity {
         player1Turn = true;
         textViewPlayer1.setTextColor(Color.RED);
         textViewPlayer2.setTextColor(Color.BLACK);
+
+
 
         retroClient.deleteBoard( new RetroCallback() {
             @Override

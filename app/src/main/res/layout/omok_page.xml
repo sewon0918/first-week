@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
 
     <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:background="@android:color/white">
     <TextView
     android:id="@+id/text_view_p1"
     android:layout_width="wrap_content"
@@ -45,7 +47,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:background="@android:color/white">
         <Button
             android:id="@+id/button_reset"
             android:layout_width="wrap_content"
@@ -171,7 +174,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:background="@android:color/white">
         <Button
             android:id="@+id/button_10"
             android:layout_width="0dp"
@@ -185,7 +189,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:textSize="12sp"
-            android:freezesText="true"/>
+            android:freezesText="true"
+            android:background="#00ff0000"/>
         <Button
             android:id="@+id/button_12"
             android:layout_width="0dp"

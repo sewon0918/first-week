@@ -23,7 +23,7 @@
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="225dp"
-                android:layout_height="181dp"
+                android:layout_height="133dp"
                 android:fontFamily="@font/crayon"
                 android:gravity="center"
                 android:text="오 목 게 임"

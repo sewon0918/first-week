@@ -157,14 +157,15 @@
                         <TextView
                             android:id="@+id/textView3"
                             android:layout_width="225dp"
-                            android:layout_height="181dp"
+                            android:layout_height="130dp"
                             android:fontFamily="@font/crayon"
                             android:gravity="center"
                             android:text="오 목 게 임"
                             android:textSize="52sp" />
                         <ImageView
                             android:layout_width="match_parent"
-                            android:layout_height="200dp" />
+                            android:paddingTop="30dp"
+                            android:layout_height="240dp" />
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -199,7 +200,7 @@
                                         android:layout_height="match_parent"
                                         android:fontFamily="@font/crayon"
                                         android:gravity="center"
-                                        android:text=" SINGLE           MULTI"
+                                        android:text="SINGLE      MULTI"
                                         android:textSize="30sp" />
                                 </LinearLayout>
                             </FrameLayout>

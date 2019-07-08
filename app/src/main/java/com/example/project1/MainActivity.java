@@ -5,7 +5,9 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -55,6 +57,8 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -401,6 +405,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+
+//        try { PackageInfo info = getPackageManager().getPackageInfo("com.example.project1", PackageManager.GET_SIGNATURES); for (Signature signature : info.signatures) { MessageDigest md = MessageDigest.getInstance("SHA"); md.update(signature.toByteArray()); String str = Base64.encodeToString(md.digest(), Base64.DEFAULT); Log.d("KeyHash:", str); Toast.makeText(this, str, Toast.LENGTH_LONG).show(); } }catch(NoSuchAlgorithmException e){ e.printStackTrace(); }catch (PackageManager.NameNotFoundException e){ e.printStackTrace(); }
         //        //name="";
         context=this;
         checkPermission();

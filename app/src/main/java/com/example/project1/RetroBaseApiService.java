@@ -51,5 +51,17 @@ public interface RetroBaseApiService {
     @DELETE("/api/omok/")
     Call<ResponseBody> deleteBoard();
 
+
+    // ADD USER
+    @POST("/api/user/{id}")
+    Call<String> addUser(@Path("id") String id);
+
+    // DELETE USER
+    @DELETE("/api/user/{id}")
+    Call<ResponseBody> delUser(@Path("id") String id);
+
+    // GET USER
+    @GET("/api/user/{id}")
+    Call<List<String>> getUser(@Path("id") String id);
 }
 

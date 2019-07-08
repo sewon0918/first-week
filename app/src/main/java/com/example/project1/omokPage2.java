@@ -27,8 +27,10 @@ public class omokPage2 extends AppCompatActivity {
     View v;
 
     private Button[][] buttons = new Button[10][10];
-    private String name= MainActivity.name;
-    private boolean playerTurn = true;
+    private String name= ((MainActivity)MainActivity.context).name;
+    private boolean playerTurn;
+    private boolean CanStart = false;
+    private int Player=2;
     private int roundCount;
     private int player1Points;
     private int player2Points;
@@ -38,8 +40,12 @@ public class omokPage2 extends AppCompatActivity {
     private TextView textViewTie;
     private TextView timer;
 
+
+
     public ArrayList<coordinates> Board;
+
     RetroClient retroClient = RetroClient.getInstance(this).createBaseApi();
+
     TimerTask timerTask = new TimerTask() {
         int cnt = 0;
         @Override
@@ -56,23 +62,42 @@ public class omokPage2 extends AppCompatActivity {
                     int itemCount = board.size();
                     if(cnt!=itemCount) {
                         countDownTimer.start();
-                        playerTurn = !playerTurn;
                         makeBoard(board);
                         cnt = itemCount;
 
                         if (checkForWin()==1){
                             playerWins(1);
                             updatePointsText();
+
+                            MediaPlayer mediaPlayer2 = MediaPlayer.create(getBaseContext(), R.raw.biryong_cut);
+                            //mMediaPlayer.stop();
+                            mediaPlayer2.start();
+
                             textViewPlayer1.setTextColor(Color.RED);
                             textViewPlayer2.setTextColor(Color.BLACK);
                         }
                         else if(checkForWin()==2){
                             playerWins(2);
+                            updatePointsText();
                             textViewPlayer1.setTextColor(Color.BLACK);
                             textViewPlayer2.setTextColor(Color.RED);
+                           // mMediaPlayer.stop();
+                            MediaPlayer mediaPlayer2 = MediaPlayer.create(getBaseContext(), R.raw.biryong_cut);
+                            mediaPlayer2.start();
                         }
                         else if (roundCount == 100){
                             draw();
+                        }
+                        else{
+                            updatePointsText();
+
+                            if (playerTurn){
+                                textViewPlayer1.setTextColor(Color.RED);
+                                textViewPlayer2.setTextColor(Color.BLACK);
+                            }else{
+                                textViewPlayer1.setTextColor(Color.BLACK);
+                                textViewPlayer2.setTextColor(Color.RED);
+                            }
                         }
                     }
                 }
@@ -118,12 +143,14 @@ public class omokPage2 extends AppCompatActivity {
 
     }
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.omok_page);
 
-        MediaPlayer mMediaPlayer = MediaPlayer.create(this, R.raw.whistle);
+        MediaPlayer mMediaPlayer = MediaPlayer.create(this, R.raw.cut_whisper);
+
         mMediaPlayer.setLooping(true);
         mMediaPlayer.start();
 
@@ -131,6 +158,51 @@ public class omokPage2 extends AppCompatActivity {
         textViewPlayer2 = findViewById(R.id.text_view_p2);
         textViewTie = findViewById(R.id.text_view_tie);
         timer = findViewById(R.id.text_view_timer);
+
+        retroClient.addUser(name, new RetroCallback() {
+            @Override
+            public void onError(Throwable t) {
+
+            }
+
+            @Override
+            public void onSuccess(int code, Object receivedData) {
+
+            }
+
+            @Override
+            public void onFailure(int code) {
+
+            }
+        });
+
+        retroClient.getUser(name, new RetroCallback() {
+            @Override
+            public void onError(Throwable t) {
+
+            }
+
+            @Override
+            public void onSuccess(int code, Object receivedData) {
+                List<String> users = (List<String>) receivedData;
+                if (users.size() == 1) {
+                    playerTurn = true;
+                    CanStart = false;
+                    Player = 1;
+                } else if (users.size() == 2) {
+                    playerTurn = false;
+                    CanStart = true;
+                    youCanStart();
+                }
+                Log.d(TAG, "onSuccess: "+Player);
+            }
+
+            @Override
+            public void onFailure(int code) {
+
+            }
+        });
+
 
         Timer timer2 = new Timer(true);
         timer2.scheduleAtFixedRate(timerTask, 0, 100);
@@ -179,6 +251,7 @@ public class omokPage2 extends AppCompatActivity {
             }
             @Override
             public void onSuccess(int code, Object receivedData) {
+                Log.d(TAG, "send successfully");
             }
             @Override
             public void onFailure(int code) {
@@ -190,8 +263,17 @@ public class omokPage2 extends AppCompatActivity {
 
     }
 
+    private boolean youCanStart(){
+        if(CanStart){
+            Toast toast = Toast.makeText(this, "You Can Start", Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL,0,0);
+            toast.show();
+            return true;
+        }
+        return false;
+    }
 
-private int checkForWin(){
+    private int checkForWin(){
         String[][] field = new String[10][10];
         for (int i=0; i<10; i++){
             for (int j=0; j<10; j++){
@@ -250,6 +332,19 @@ private int checkForWin(){
         return 0;
     }
     private void playerWins(int who){
+        retroClient.delUser(name, new RetroCallback() {
+            @Override
+            public void onError(Throwable t) {
+            }
+
+            @Override
+            public void onSuccess(int code, Object receivedData) {
+            }
+
+            @Override
+            public void onFailure(int code) {
+            }
+        });
         countDownTimer.cancel();
         if (who==1){
             player1Points++;
@@ -281,6 +376,19 @@ private int checkForWin(){
     }
 
     private void player1Win(){
+        retroClient.delUser(name, new RetroCallback() {
+            @Override
+            public void onError(Throwable t) {
+            }
+
+            @Override
+            public void onSuccess(int code, Object receivedData) {
+            }
+
+            @Override
+            public void onFailure(int code) {
+            }
+        });
         countDownTimer.cancel();
         player1Points++;
         Toast toast = Toast.makeText(this, "Time is up! Player 1 wins", Toast.LENGTH_SHORT);
@@ -306,6 +414,19 @@ private int checkForWin(){
     }
 
     private void player2Win(){
+        retroClient.delUser(name, new RetroCallback() {
+            @Override
+            public void onError(Throwable t) {
+            }
+
+            @Override
+            public void onSuccess(int code, Object receivedData) {
+            }
+
+            @Override
+            public void onFailure(int code) {
+            }
+        });
         countDownTimer.cancel();
         player2Points++;
         Toast toast2 = Toast.makeText(this, "Time is up! Player 2 wins", Toast.LENGTH_SHORT);
@@ -352,6 +473,7 @@ private int checkForWin(){
         roundCount=0;
         textViewPlayer1.setTextColor(Color.RED);
         textViewPlayer2.setTextColor(Color.BLACK);
+
 
         retroClient.deleteBoard( new RetroCallback() {
             @Override
