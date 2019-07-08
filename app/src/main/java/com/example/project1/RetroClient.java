@@ -157,4 +157,56 @@ public class RetroClient {
             }
         });
     }
+
+
+    public void getBoard(final RetroCallback callback) {
+        apiService.getBoard().enqueue(new Callback<List<coordinates>>(){
+            @Override
+            public void onResponse(Call<List<coordinates>> call, Response<List<coordinates>> response) {
+                if(response.isSuccessful()){
+                    callback.onSuccess(response.code(), response.body());
+                } else {
+                    callback.onFailure(response.code());
+                }
+            }
+            @Override
+            public void onFailure(Call<List<coordinates>> call, Throwable t) {
+                callback.onError(t);
+            }
+        });
+    }
+
+    public void addPoint(coordinates coordinates, final RetroCallback callback){
+        apiService.addPoint(coordinates).enqueue((new Callback<coordinates>() {
+            @Override
+            public void onResponse(Call<coordinates> call, Response<coordinates> response) {
+                if(response.isSuccessful()){
+                    callback.onSuccess(response.code(), response.body());
+                } else {
+                    callback.onFailure(response.code());
+                }
+            }
+            @Override
+            public void onFailure(Call<coordinates> call, Throwable t) {
+                callback.onError(t);
+            }
+        }));
+    }
+
+    public void deleteBoard(final RetroCallback callback) {
+        apiService.deleteBoard().enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.code(), response.body());
+                } else {
+                    callback.onFailure(response.code());
+                }
+            }
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                callback.onError(t);
+            }
+        });
+    }
 }
