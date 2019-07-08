@@ -19,13 +19,13 @@ public class RecyclerViewAdapterTab2 extends RecyclerView.Adapter<RecyclerViewAd
 
     public Context mContext;
     public ArrayList<Bitmap> mData;
-    public ArrayList<String> mName;
+    //public ArrayList<String> mName;
 
 
-    public RecyclerViewAdapterTab2(Context mContext, ArrayList<Bitmap> mData, ArrayList<String> mName) {
+    public RecyclerViewAdapterTab2(Context mContext, ArrayList<Bitmap> mData) {
         this.mContext = mContext;
         this.mData = mData;
-        this.mName = mName;
+        //this.mName = mName;
     }
 
     @NonNull

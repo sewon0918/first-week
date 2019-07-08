@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -31,6 +32,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -328,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    private void initGalleryInfo(ArrayList<Bitmap> Gallery) {
+    private void initGalleryInfo(ArrayList<Bitmap> Gallery, ArrayList<String> GalleryName) {
         Log.d(TAG, "initGalleryInfo: preparing gallery info");
         initTab2RecyclerView(Gallery);
     }
@@ -349,7 +351,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     byte[] decodedByteArray = Base64.decode(gallerystr, Base64.NO_WRAP);
                     Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.length);
                     Gallery.add(decodedBitmap);
-                    GalleryName.add(String.valueOf(Gallery.size()));
+                    GalleryName.add(data.get(i).getName());
                 }
                 initTab2RecyclerView(Gallery);
             }
@@ -360,44 +362,70 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
     //Context context = this;
-    private void initTab2RecyclerView(ArrayList<Bitmap> Gallery) {
+    private void initTab2RecyclerView(final ArrayList<Bitmap> Gallery) {
         Log.d(TAG, "initTab2RecyclerView: init recyclerView for tab2.");
         final RecyclerView recyclerViewtab2 = findViewById(R.id.recycler_view_tab2);
-        final RecyclerViewAdapterTab2 adapterTab2 = new RecyclerViewAdapterTab2(this, Gallery, GalleryName);
+        final RecyclerViewAdapterTab2 adapterTab2 = new RecyclerViewAdapterTab2(this, Gallery);
         recyclerViewtab2.setAdapter(adapterTab2);
         recyclerViewtab2.setLayoutManager(new GridLayoutManager(this, 3));
 
         recyclerViewtab2.addOnItemTouchListener(new RecyclerViewOnItemClickListener(this, recyclerViewtab2,
                 new RecyclerViewOnItemClickListener.OnItemClickListener() {
                     @Override
-                    public void onItemClick(View v, int position) {
-                        Log.d(TAG, "click");
+                    public void onItemClick(View v, final int position) {
+                        String str = "";
+                        for (int i=0; i<GalleryName.size();i++){
+                            str=str+String.valueOf(GalleryName.get(i));
+                        }
+                        Log.d(TAG, "click"+ str);
+                        if(position >= GalleryName.size())
+                            Log.d(TAG, "out of bound");
+                        final String removedgallery = GalleryName.get(position);
+                        Log.d(TAG, "longclick"+removedgallery);
+                        AlertDialog.Builder alt_bld = new AlertDialog.Builder(v.getContext());
+                        alt_bld.setMessage("Do you want to delete the photo?").setCancelable(
+                                false).setPositiveButton("Yes",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+
+                                        Log.d(TAG, "deleting : " + String.valueOf(position));
+                                        retroClient.deleteGallery(name, removedgallery, new RetroCallback() {
+                                            @Override
+                                            public void onError(Throwable t) {
+                                                Log.e("error", "aaaaaaaaaa");
+                                            }
+                                            @Override
+                                            public void onSuccess(int code, Object receivedData) {
+                                                GalleryName.remove(position);
+                                                adapterTab2.mData.remove(position);
+                                                //adapterTab2.mName.remove(position);
+                                                adapterTab2.notifyItemRemoved(position);
+                                                adapterTab2.notifyItemRangeChanged(position, adapterTab2.getItemCount());
+
+                                            }
+                                            @Override
+                                            public void onFailure(int code) {
+                                                Log.e("error", "ddddd");
+                                            }
+                                        });
+                                    }
+                                }).setNegativeButton("No",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog alert = alt_bld.create();
+                        // Title for AlertDialog
+                        alert.setTitle("DELETE");
+                        // Icon for AlertDialog
+                        alert.show();
                     }
 
                     @Override
                     public void onItemLongClick(View v, final int position) {
-                        Log.d(TAG, String.valueOf(position));
-                        retroClient.deleteGallery(name, GalleryName.get(position), new RetroCallback() {
-                            @Override
-                            public void onError(Throwable t) {
-                                Log.e("error", "aaaaaaaaaa");
-                            }
-                            @Override
-                            public void onSuccess(int code, Object receivedData) {
-                                // 아답타에게 알린다
-                                //Gallery.remove(position);
-                                //GalleryName.remove(position);
-                                adapterTab2.mData.remove(position);
-                                adapterTab2.mName.remove(position);
-                                adapterTab2.notifyItemRemoved(position);
-                                adapterTab2.notifyItemRangeChanged(position, adapterTab2.getItemCount());
-                            }
-                            @Override
-                            public void onFailure(int code) {
-                                Log.e("error", "ddddd");
-                            }
-                        });
                     }
+
                 })
         );
     }
@@ -459,7 +487,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.d(TAG, "onCreate, isLoggedin");
             useLoginInformation(accessToken);
             //Log.d(TAG, "onCreate, isLoggedin" + name);
-
             initial();
         }
         else {
@@ -490,6 +517,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         initial();
                         created ++;
                     }
+                    //created=0;
                 }
                 @Override
                 public void onCancel() {
@@ -508,12 +536,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d(TAG, "onStart");
         super.onStart();
 
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        if (accessToken != null) {
-            Log.d(TAG, "onStart - about to call info");
-            useLoginInformation(accessToken);
-            Log.d(TAG, "onStart - info, name : " + name);
-        }
+
+//        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+//        if (accessToken != null) {
+//            Log.d(TAG, "onStart - about to call info");
+//            useLoginInformation(accessToken);
+//            Log.d(TAG, "onStart - info, name : " + name);
+//        }
     }
 
     public void onResume() {
@@ -555,11 +584,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onCompleted(JSONObject object, GraphResponse response) {
                 try {
+                    Log.d(TAG, "useLoginInformation");
                     name = object.getString("name");
-                    //email = object.getString("email");
+                    email = object.getString("email");
                     image = object.getJSONObject("picture").getJSONObject("data").getString("url");
                     Log.d("name: ", name);
-                    //Log.d("email: ", email);
                     Log.d("image: ", image);
                     initContactInfoById(name);
                     initGalleryInfoById(name);
@@ -572,7 +601,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
         // We set parameters to the GraphRequest using a Bundle.
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "id,name,picture.width(200)");
+        parameters.putString("fields", "id,name,email,picture.width(200)");
         request.setParameters(parameters);
         // Initiate the GraphRequest
         request.executeAsync();
@@ -747,11 +776,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 String addedgallery = Base64.encodeToString(bytes, Base64.NO_WRAP);
 
                                 Gallery.add(bm);
-                                GalleryName.add(String.valueOf(Gallery.size()));
+                                double random = Math.random();
+                                GalleryName.add(String.valueOf(random));
                                 GalleryInfo galleryinfo = new GalleryInfo();
                                 galleryinfo.setGallery(addedgallery);
                                 galleryinfo.setId(name);
-                                galleryinfo.setName(String.valueOf(Gallery.size()));
+                                galleryinfo.setName(String.valueOf(random));
 
                                 retroClient.addGallery(galleryinfo, new RetroCallback() {
                                     @Override
@@ -760,7 +790,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     }
                                     @Override
                                     public void onSuccess(int code, Object receivedData) {
-                                        initGalleryInfo(Gallery);
+                                        initGalleryInfo(Gallery, GalleryName);
                                     }
                                     @Override
                                     public void onFailure(int code) {
@@ -773,7 +803,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             InputStream in = getContentResolver().openInputStream(data.getData());
                             Bitmap img = BitmapFactory.decodeStream(in);
                             Gallery.add(img);
-                            GalleryName.add(String.valueOf(Gallery.size()));
+                            double random2 = Math.random();
+                            GalleryName.add(String.valueOf(random2));
                             Bitmap smallimg = resizingBitmap(img);
                             ByteArrayOutputStream stream = new ByteArrayOutputStream();
                             smallimg.compress(Bitmap.CompressFormat.JPEG, 100, stream);
@@ -783,7 +814,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             GalleryInfo galleryinfo = new GalleryInfo();
                             galleryinfo.setGallery(addedgallery);
                             galleryinfo.setId(name);
-                            galleryinfo.setName(String.valueOf(Gallery.size()));
+                            galleryinfo.setName(String.valueOf(random2));
                             retroClient.addGallery(galleryinfo, new RetroCallback() {
                                 @Override
                                 public void onError(Throwable t) {
@@ -791,7 +822,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 }
                                 @Override
                                 public void onSuccess(int code, Object receivedData) {
-                                    initGalleryInfo(Gallery);
+                                    initGalleryInfo(Gallery, GalleryName);
                                 }
                                 @Override
                                 public void onFailure(int code) {
@@ -809,7 +840,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         //if (bitmap != null) {
                         Gallery.add(bitmap);
                         //}
-                        GalleryName.add(String.valueOf(Gallery.size()));
+                        double random3 = Math.random();
+                        GalleryName.add(String.valueOf(random3));
                         //Bitmap smallbitmap = resizingBitmap(bitmap);
                         ByteArrayOutputStream stream = new ByteArrayOutputStream();
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
@@ -818,7 +850,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         GalleryInfo galleryinfo = new GalleryInfo();
                         galleryinfo.setGallery(addedgallery);
                         galleryinfo.setId(name);
-                        galleryinfo.setName(String.valueOf(Gallery.size()));
+                        galleryinfo.setName(String.valueOf(random3));
                         retroClient.addGallery(galleryinfo, new RetroCallback() {
                             @Override
                             public void onError(Throwable t) {
@@ -826,7 +858,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
                             @Override
                             public void onSuccess(int code, Object receivedData) {
-                                initGalleryInfo(Gallery);
+                                initGalleryInfo(Gallery, GalleryName);
                             }
                             @Override
                             public void onFailure(int code) {
