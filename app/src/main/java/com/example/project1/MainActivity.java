@@ -25,6 +25,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -55,7 +56,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -73,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public String name;
     private String email;
     public String image;
+    public Bitmap imageBitmap;
     public static Context context;
 
     //variables for Tab1
@@ -434,6 +440,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+
         //        //name="";
         context=this;
         checkPermission();
@@ -584,14 +591,68 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onCompleted(JSONObject object, GraphResponse response) {
                 try {
-                    Log.d(TAG, "useLoginInformation");
+                    TextView profile_email = (TextView) findViewById(R.id.profile_email);
+                    TextView profile_email2 = (TextView) findViewById(R.id.profile_email2);
                     name = object.getString("name");
-                    email = object.getString("email");
+                    if (object.has("email")){
+                        email = object.getString("email");
+                        profile_email.setText(email);
+                        profile_email2.setText(email);
+                    }else{
+                        profile_email.setText("email을 알 수 없습니다");
+                        profile_email2.setText("email을 알 수 없습니다");
+                    }
+                    TextView profile_name = (TextView) findViewById(R.id.profile_name);
+                    profile_name.setText(name);
+                    TextView profile_name2 = (TextView) findViewById(R.id.profile_name2);
+                    profile_name2.setText(name);
                     image = object.getJSONObject("picture").getJSONObject("data").getString("url");
-                    Log.d("name: ", name);
-                    Log.d("image: ", image);
+                    Thread mThread = new Thread(){
+                        @Override
+                        public void run(){
+                            URL url = null;
+                            try {
+                                url = new URL(image);
+                            } catch (MalformedURLException e) {
+                                e.printStackTrace();
+                            }
+                            HttpURLConnection connection = null;
+                            try {
+                                connection = (HttpURLConnection) url.openConnection();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                connection.connect();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            InputStream input = null;
+                            try {
+                                input = connection.getInputStream();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            imageBitmap = BitmapFactory.decodeStream(input);
+
+                        }
+                    };
+                    mThread.start();
+                    try{
+                        mThread.join();
+                        ImageView profile_picture = (ImageView) findViewById(R.id.profile_picture);
+                        ImageView profile_picture2 = (ImageView) findViewById(R.id.profile_picture2);
+                        profile_picture.setImageBitmap(imageBitmap);
+                        profile_picture2.setImageBitmap(imageBitmap);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+
+
                     initContactInfoById(name);
                     initGalleryInfoById(name);
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
