@@ -38,8 +38,12 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <!--FACEBOOK====================================-->
+        <activity android:name="com.example.project1.omokPage"/>
+        <activity android:name="com.example.project1.omokPage2"/>
     </application>
+
+
+        <!--FACEBOOK====================================-->
 
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />

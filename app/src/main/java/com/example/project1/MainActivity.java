@@ -6,7 +6,9 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -61,6 +63,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -75,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Manifest.permission.READ_EXTERNAL_STORAGE
     };
 
-    public String name;
+    public static String name;
     private String email;
     public String image;
     public Bitmap imageBitmap;
@@ -89,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<PersonInfo> PersonInfo = new ArrayList<>();
     private ArrayList<Bitmap> Gallery = new ArrayList<>();
     private ArrayList<String> GalleryName = new ArrayList<>();
+    private String BoardName = new String();
     private String imageEncoded;
     private SwipeController swipeController = null;
     private final int ADD_CONTACT = 3;
@@ -111,19 +116,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private final int PICK_IMAGE_REQUEST = 1;
     private final int TAKE_PICTURE = 2;
     //private CountDownTimer countDownTimer;
-    private CountDownTimer  countDownTimer = new CountDownTimer(20000, 1000) {
-        public void onTick(long millisUntilFinished) {
-            timer.setText(String.format(Locale.getDefault(), "%d sec left.", millisUntilFinished / 1000L));
-        }
-        public void onFinish() {
-            timer.setText("Done.");
-            if (player1Turn){
-                player2Win();
-            }else{
-                player1Win();
-            }
-        }
-    };
+
     RetroClient retroClient= RetroClient.getInstance(this).createBaseApi();
     //RetroClient retroClient2= RetroClient.getInstance(this).createBaseApi();
 
@@ -182,6 +175,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        else
 //            Log.d("PHOTO", "second try failed to load photo");
         return null;
+    }
+
+    @Override
+    public void onClick(View view) {
+
     }
 
     public Bitmap resizingBitmap(Bitmap oBitmap){
@@ -745,26 +743,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ts3.setIndicator("Game");
         tabHost1.addTab(ts3);
 
-        textViewPlayer1 = findViewById(R.id.text_view_p1);
-        textViewPlayer2 = findViewById(R.id.text_view_p2);
-        textViewTie = findViewById(R.id.text_view_tie);
-        timer = findViewById(R.id.text_view_timer);
+        ImageView img1 = (ImageView) findViewById(R.id.imageView);
+        ImageView img2 = (ImageView) findViewById(R.id.imageView2);
+//        ImageView phone1 = (ImageView) findViewById(R.id.image_phone);
+//        ImageView phone2 = (ImageView) findViewById(R.id.image_phone2);
+//        ImageView phone3 = (ImageView) findViewById(R.id.image_phone3);
 
-        for (int i=0; i<10; i++){
-            for (int j=0; j<10; j++){
-                String buttonID ="button_"+i+j;
-                int resID = getResources().getIdentifier(buttonID, "id", getPackageName());
-                buttons[i][j] = findViewById(resID);
-                buttons[i][j].setOnClickListener(this);
-            }
-        }
-        Button buttonReset = findViewById(R.id.button_reset);
-        buttonReset.setOnClickListener(new View.OnClickListener(){
+        TextView single = (TextView) findViewById(R.id.textView4);
+//        TextView multi = (TextView) findViewById(R.id.MULTIPLAY);
+
+        img1.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                resetGame();
+                Intent intent = new Intent(v.getContext(), omokPage.class);
+                startActivity(intent);
             }
         });
+
+        img2.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Intent intent = new Intent(v.getContext(), omokPage2.class);
+                startActivity(intent);
+            }
+        });
+        /*
+
+        */
         tabHost1.setCurrentTab(0);
     }
 
@@ -956,231 +961,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    @Override
-    public void onClick(View v){
-        countDownTimer.start();
-        if (!((Button) v).getText().toString().equals("")){
-            return;
-        }
-        if (player1Turn){
-            ((Button) v).setText("O");
-        }else{
-            ((Button) v).setText("X");
-        }
-        roundCount++;
-        if (checkForWin()){
-            if (player1Turn){
-                player1Wins();
-            }else{
-                player2Wins();
-            }
-        }else if (roundCount == 100){
-            draw();
-        }else{
-            updatePointsText();
-            player1Turn = !player1Turn;
-            if (player1Turn){
-                textViewPlayer1.setTextColor(Color.RED);
-                textViewPlayer2.setTextColor(Color.BLACK);
-            }else{
-                textViewPlayer1.setTextColor(Color.BLACK);
-                textViewPlayer2.setTextColor(Color.RED);
-            }
-        }
 
-    }
-
-    private Boolean checkForWin(){
-        String[][] field = new String[10][10];
-        for (int i=0; i<10; i++){
-            for (int j=0; j<10; j++){
-                field[i][j] = buttons[i][j].getText().toString();
-            }
-        }
-        for (int i=0; i<10; i++){
-            for (int j=0; j<6; j++){
-                if (field[i][j].equals(field[i][j+1]) && field[i][j].equals(field[i][j+2]) && field[i][j].equals(field[i][j+3]) && field[i][j].equals(field[i][j+4]) && !field[i][j].equals("")){
-                    return true;
-                }
-            }
-        }
-        for (int i=0; i<10; i++){
-            for (int j=0; j<6; j++){
-                if (field[j][i].equals(field[j+1][i]) && field[j][i].equals(field[j+2][i]) && field[j][i].equals(field[j+3][i]) && field[j][i].equals(field[j+4][i]) && !field[j][i].equals("")){
-                    return true;
-                }
-            }
-        }
-        for (int i=0; i<6; i++){
-            for (int j=0; j<6; j++){
-                if (field[i][j].equals(field[i+1][j+1]) && field[i][j].equals(field[i+2][j+2]) && field[i][j].equals(field[i+3][j+3]) && field[i][j].equals(field[i+4][j+4]) && !field[i][j].equals("")){
-                    return true;
-                }
-            }
-        }
-        for (int i=0; i<6; i++){
-            for (int j=4; j<10; j++){
-                if (field[i][j].equals(field[i+1][j-1]) && field[i][j].equals(field[i+2][j-2]) && field[i][j].equals(field[i+3][j-3]) && field[i][j].equals(field[i+4][j-4]) && !field[i][j].equals("")){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private void player1Wins(){
-        countDownTimer.cancel();
-        player1Points++;
-        Toast toast = Toast.makeText(this, "Player 1 wins!", Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL,0,0);
-        toast.show();
-        updatePointsText();
-        timer.setText("timer: ");
-        for (int i=0; i<10; i++){
-            for (int j=0; j<10; j++){
-                buttons[i][j].setEnabled(false);
-            }
-        }
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                resetBoard();
-                for (int i=0; i<10; i++){
-                    for (int j=0; j<10; j++){
-                        buttons[i][j].setEnabled(true);
-                    }
-                }
-            }},2000);
-    }
-
-    private void player2Wins(){
-        countDownTimer.cancel();
-        player2Points++;
-        Toast toast2 = Toast.makeText(this, "Player 2 wins!", Toast.LENGTH_SHORT);
-        toast2.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL,0,0);
-        toast2.show();
-        updatePointsText();
-        timer.setText("timer: ");
-        for (int i=0; i<10; i++){
-            for (int j=0; j<10; j++){
-                buttons[i][j].setEnabled(false);
-            }
-        }
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                resetBoard();
-                for (int i=0; i<10; i++){
-                    for (int j=0; j<10; j++){
-                        buttons[i][j].setEnabled(true);
-                    }
-                }
-            }},2000);
-    }
-
-    private void player1Win(){
-        countDownTimer.cancel();
-        player1Points++;
-        Toast toast = Toast.makeText(this, "Time is up! Player 1 wins", Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL,0,0);
-        toast.show();
-        updatePointsText();
-        timer.setText("timer: ");
-        for (int i=0; i<10; i++){
-            for (int j=0; j<10; j++){
-                buttons[i][j].setEnabled(false);
-            }
-        }
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                resetBoard();
-                for (int i=0; i<10; i++){
-                    for (int j=0; j<10; j++){
-                        buttons[i][j].setEnabled(true);
-                    }
-                }
-            }},2000);
-    }
-
-    private void player2Win(){
-        countDownTimer.cancel();
-        player2Points++;
-        Toast toast2 = Toast.makeText(this, "Time is up! Player 2 wins", Toast.LENGTH_SHORT);
-        toast2.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL,0,0);
-        toast2.show();
-        updatePointsText();
-        timer.setText("timer: ");
-        for (int i=0; i<10; i++){
-            for (int j=0; j<10; j++){
-                buttons[i][j].setEnabled(false);
-            }
-        }
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                resetBoard();
-                for (int i=0; i<10; i++){
-                    for (int j=0; j<10; j++){
-                        buttons[i][j].setEnabled(true);
-                    }
-                }
-            }},2000);
-    }
-
-    private void draw(){
-        tiePoints++;
-        Toast.makeText(this, "Again!", Toast.LENGTH_SHORT).show();
-        updatePointsText();
-        resetBoard();
-    }
-
-    private void updatePointsText(){
-        textViewPlayer1.setText("Player1: " + player1Points);
-        textViewPlayer2.setText("Player2: " + player2Points);
-        textViewTie.setText("Tie: " + tiePoints);
-    }
-
-    private void resetBoard(){
-        for (int i=0 ; i<10 ; i++){
-            for (int j=0; j<10; j++){
-                buttons[i][j].setText("");
-            }
-        }
-        roundCount=0;
-        player1Turn = true;
-        textViewPlayer1.setTextColor(Color.RED);
-        textViewPlayer2.setTextColor(Color.BLACK);
-    }
-
-    private void resetGame(){
-        countDownTimer.cancel();
-        player1Points = 0;
-        player2Points = 0;
-        tiePoints = 0;
-        timer.setText("timer: ");
-        updatePointsText();
-        resetBoard();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("roundCount", roundCount);
-        outState.putInt("player1Points", player1Points);
-        outState.putInt("player2Points", player2Points);
-        outState.putInt("tie2Points", tiePoints);
-        outState.putBoolean("player1Turn", player1Turn);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        roundCount=savedInstanceState.getInt("roundCount");
-        player1Points=savedInstanceState.getInt("player1Points");
-        player2Points=savedInstanceState.getInt("player2Points");
-        tiePoints=savedInstanceState.getInt("tiePoints");
-        player1Turn=savedInstanceState.getBoolean("player1Turn");
-    }
     //////////////////////////////////////
 }
